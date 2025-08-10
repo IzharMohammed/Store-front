@@ -1,10 +1,10 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { useProductStore } from "@/stores/product-store";
 import { useQuery } from "@tanstack/react-query";
+import { Product } from "@/types";
+
 const tabs = [
   { id: "featured", label: "Featured" },
   { id: "bestsellers", label: "Best Sellers" },
@@ -12,28 +12,35 @@ const tabs = [
   { id: "sale", label: "On Sale" },
 ];
 
-async function fetchProducts(): Promise<Products[]> {
-  const response = await fetch("");
+// Update the return type to match your API response
+async function fetchProducts(): Promise<{ products: Product[] }> {
+  const response = await fetch("/api/products", {
+    method: "GET",
+  });
   return response.json();
 }
 
 export function HotProducts() {
   const [activeTab, setActiveTab] = useState("featured");
-  const { products } = useProductStore();
-
-  const { data, error, isLoading, isError } = useQuery({
+  
+  const {
+    data: response, // Changed from 'products' to 'response'
+    error,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
 
+  // Extract the products array from the response
+  const products = response?.products || [];
+  
+  console.log("Full response:", response);
+  console.log("Products array:", products);
+
   if (isLoading) return <div>loading...</div>;
-
   if (isError) return <p>Error:- {(error as Error).message}</p>;
-
-  // Mock filtering logic - in real app, this would come from API
-  const getFilteredProducts = () => {
-    return products.slice(0, 8); // Show first 8 products for demo
-  };
 
   return (
     <section className="py-12">
@@ -51,9 +58,8 @@ export function HotProducts() {
           ))}
         </div>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {getFilteredProducts().map((product) => (
+        {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
