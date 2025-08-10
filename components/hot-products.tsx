@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useProductStore } from "@/stores/product-store";
-
+import { useQuery } from "@tanstack/react-query";
 const tabs = [
   { id: "featured", label: "Featured" },
   { id: "bestsellers", label: "Best Sellers" },
@@ -12,9 +12,23 @@ const tabs = [
   { id: "sale", label: "On Sale" },
 ];
 
+async function fetchProducts(): Promise<Products[]> {
+  const response = await fetch("");
+  return response.json();
+}
+
 export function HotProducts() {
   const [activeTab, setActiveTab] = useState("featured");
   const { products } = useProductStore();
+
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
+  if (isLoading) return <div>loading...</div>;
+
+  if (isError) return <p>Error:- {(error as Error).message}</p>;
 
   // Mock filtering logic - in real app, this would come from API
   const getFilteredProducts = () => {
