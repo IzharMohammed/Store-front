@@ -1,66 +1,66 @@
-import Image from "next/image"
+import { SiteHeader } from "@/components/site-header"
+import { BannerCarousel } from "@/components/banner-carousel"
+import { ProductCard } from "@/components/product-card"
 import Link from "next/link"
-import ProductGrid from "@/components/product-grid"
-import { PRODUCTS, CATEGORIES } from "@/lib/mock-data"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
+import { hotProducts, categories, products, withProductMeta } from "@/lib/mock-data"
 
 export default function HomePage() {
-  const hot = PRODUCTS.slice(0, 4)
+  const newest = products.slice(0, 6).map(withProductMeta)
+
   return (
-    <main className="mx-auto max-w-6xl px-4">
-      <section className="my-6 overflow-hidden rounded-lg border">
-        <div className="relative aspect-[21/9] w-full bg-muted">
-          <Image
-            src="/placeholder.svg?height=480&width=1200"
-            alt="Store banner"
-            fill
-            className="object-cover"
-          />
-        </div>
-        <div className="p-4 sm:p-6">
-          <h1 className="text-xl font-semibold">Welcome to Shop</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Simple, clean products for everyday life.
-          </p>
-          <div className="mt-4">
-            <Link href="/products">
-              <Button>Shop all products</Button>
-            </Link>
-          </div>
-        </div>
+    <main className="min-h-screen">
+      <SiteHeader />
+      <section className="container mx-auto px-4 py-6 md:py-8">
+        <BannerCarousel />
       </section>
 
-      <section className="my-8">
-        <div className="mb-4 flex items-center justify-between">
+      <section className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Hot products</h2>
-          <Link className="text-sm underline" href="/products">
-            Look all
-          </Link>
+          <Button asChild variant="link" className="px-0">
+            <Link href="/products">View all</Link>
+          </Button>
         </div>
-        <ProductGrid products={hot} />
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {hotProducts.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
       </section>
 
-      <section className="my-10">
-        <h2 className="mb-4 text-lg font-semibold">Browse by category</h2>
-        <Tabs defaultValue="All">
-          <TabsList className="flex w-full flex-wrap">
-            <TabsTrigger value="All">All</TabsTrigger>
-            {CATEGORIES.map((c) => (
-              <TabsTrigger key={c} value={c}>
-                {c}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <TabsContent value="All" className="mt-6">
-            <ProductGrid products={PRODUCTS} />
-          </TabsContent>
-          {CATEGORIES.map((c) => (
-            <TabsContent key={c} value={c} className="mt-6">
-              <ProductGrid products={PRODUCTS.filter((p) => p.category === c)} />
-            </TabsContent>
+      <section className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Browse by category</h2>
+          <Button asChild variant="link" className="px-0">
+            <Link href="/products">See all</Link>
+          </Button>
+        </div>
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          {categories.map((c) => (
+            <Link
+              key={c}
+              href={`/products?category=${encodeURIComponent(c)}`}
+              className="border rounded-md p-3 md:p-4 hover:bg-muted text-center text-sm"
+            >
+              {c}
+            </Link>
           ))}
-        </Tabs>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">New arrivals</h2>
+          <Button asChild variant="link" className="px-0">
+            <Link href="/products?sort=new">Sort by newest</Link>
+          </Button>
+        </div>
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {newest.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
       </section>
     </main>
   )

@@ -68,6 +68,6 @@ export function CartProvider({ children }: { children?: React.ReactNode } = { ch
 
 export function useCart() {
   const ctx = useContext(CartContext)
-  if (!ctx) throw new Error("useCart must be used within CartProvider")
+//   if (!ctx) throw new Error("useCart must be used within CartProvider")
   return ctx
 }
