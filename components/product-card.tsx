@@ -1,52 +1,53 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Heart, ShoppingCart, Star } from "lucide-react"
-import { useCartStore } from "@/stores/cart-store"
-import { useWishlistStore } from "@/lib/stores/wishlist-store"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Heart, ShoppingCart, Star } from "lucide-react";
+import { useCartStore } from "@/stores/cart-store";
+import { useWishlistStore } from "@/stores/wishlist-store";
 // import { useToast } from "@/hooks/use-toast"
-import type { Product } from "@/types/index"
+import type { Product } from "@/types/index";
 
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCartStore()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore()
-//   const { toast } = useToast()
+  const { addToCart } = useCartStore();
+  const { addToWishlist, removeFromWishlist, isInWishlist } =
+    useWishlistStore();
+  //   const { toast } = useToast()
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault()
-    addToCart(product, 1)
+    e.preventDefault();
+    addToCart(product, 1);
     // toast({
     //   title: "Added to cart",
     //   description: `${product.name} has been added to your cart`,
     // })
-  }
+  };
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
-    //   toast({
-    //     title: "Removed from wishlist",
-    //     description: `${product.name} has been removed from your wishlist`,
-    //   })
+      removeFromWishlist(product.id);
+      //   toast({
+      //     title: "Removed from wishlist",
+      //     description: `${product.name} has been removed from your wishlist`,
+      //   })
     } else {
-      addToWishlist(product)
-    //   toast({
-    //     title: "Added to wishlist",
-    //     description: `${product.name} has been added to your wishlist`,
-    //   })
+      addToWishlist(product);
+      //   toast({
+      //     title: "Added to wishlist",
+      //     description: `${product.name} has been added to your wishlist`,
+      //   })
     }
-  }
+  };
 
   return (
     <Card className="group hover:shadow-lg transition-shadow">
@@ -69,14 +70,20 @@ export function ProductCard({ product }: ProductCardProps) {
             className="absolute top-2 right-2 bg-white/80 hover:bg-white"
             onClick={handleWishlistToggle}
           >
-            <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? "fill-current text-red-500" : ""}`} />
+            <Heart
+              className={`w-4 h-4 ${
+                isInWishlist(product.id) ? "fill-current text-red-500" : ""
+              }`}
+            />
           </Button>
         </div>
       </Link>
 
       <CardContent className="p-4">
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-semibold truncate hover:text-primary">{product.name}</h3>
+          <h3 className="font-semibold truncate hover:text-primary">
+            {product.name}
+          </h3>
         </Link>
         <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
         <div className="flex items-center gap-1 mb-2">
@@ -92,11 +99,15 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button onClick={handleAddToCart} disabled={product.stock === 0} className="w-full">
+        <Button
+          onClick={handleAddToCart}
+          disabled={product.stock === 0}
+          className="w-full"
+        >
           <ShoppingCart className="w-4 h-4 mr-2" />
           Add to Cart
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
