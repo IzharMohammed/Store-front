@@ -1,18 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ProductGrid } from "@/components/product-grid"
-import { ProductFilters } from "@/components/product-filters"
-import { useProductStore } from "@/stores/product-store"
+import { useState } from "react";
+import { ProductGrid } from "@/components/product-grid";
+import { ProductFilters } from "@/components/product-filters";
+import { useProductStore } from "@/stores/product-store";
 
 export default function ProductsPage() {
-  const { products, filteredProducts, setFilters, filters } = useProductStore()
-  const [showFilters, setShowFilters] = useState(false)
+  const { products, filteredProducts, setFilters, filters } = useProductStore();
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
-        <div className={`lg:w-1/4 ${showFilters ? "block" : "hidden lg:block"}`}>
+        <div
+          className={`lg:w-1/4 ${showFilters ? "block" : "hidden lg:block"}`}
+        >
           <ProductFilters />
         </div>
         <div className="lg:w-3/4">
@@ -29,5 +31,5 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
