@@ -11,7 +11,7 @@ import { Heart, ShoppingCart, Star } from "lucide-react"
 import { useCartStore } from "@/lib/stores/cart-store"
 import { useWishlistStore } from "@/lib/stores/wishlist-store"
 import { useToast } from "@/hooks/use-toast"
-import type { Product } from "@/lib/types"
+import type { Product } from "@/types/index"
 
 interface ProductCardProps {
   product: Product
