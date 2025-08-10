@@ -1,7 +1,7 @@
-import { HeroBanner } from "@/components/hero-banner"
-import { HotProducts } from "@/components/hot-products"
-import { Categories } from "@/components/categories"
-import { FeaturedProducts } from "@/components/featured-products"
+import { HeroBanner } from "@/components/hero-banner";
+import { HotProducts } from "@/components/hot-products";
+import { Categories } from "@/components/categories";
+import { FeaturedProducts } from "@/components/featured-products";
 
 export default function HomePage() {
   return (
@@ -13,5 +13,5 @@ export default function HomePage() {
         <FeaturedProducts />
       </div>
     </div>
-  )
+  );
 }
