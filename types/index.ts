@@ -1,50 +1,68 @@
-export type Product = {
+export interface Product {
   id: string
   name: string
-  description?: string | null
+  description?: string
   price: number
   stock: number
-  image?: string | null
+  image?: string
   status: "ACTIVE" | "INACTIVE"
   category: string
+  createdAt: Date
   storeId: string
-  createdAt: string
 }
 
-export type Feedback = {
+export interface CartItem {
   id: string
-  rating: number
-  comment?: string | null
-  createdAt: string
-  userId: string
-  productId: string
-}
-
-export type OrderItem = {
-  id: string
+  product: Product
   quantity: number
-  price: number
-  productId: string
+  addedAt: Date
 }
 
-export type Order = {
+export interface WishlistItem {
+  id: string
+  product: Product
+  addedAt: Date
+}
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string
+  premium: boolean
+  role: "STORE_OWNER" | "STORE_MEMBER" | "CUSTOMER"
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Order {
   id: string
   total: number
   status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  address?: string | null
-  customerEmail?: string | null
-  customerName?: string | null
-  customerPhone?: string | null
-  shippingAddress?: Record<string, unknown> | null
-  billingAddress?: Record<string, unknown> | null
-  createdAt: string
-  updatedAt: string
+  address?: string
+  customerEmail?: string
+  customerName?: string
+  customerPhone?: string
+  createdAt: Date
+  updatedAt: Date
   customerId: string
   storeId: string
   items: OrderItem[]
 }
 
-export type ProductWithMeta = Product & {
-  avgRating?: number
-  reviewCount?: number
+export interface OrderItem {
+  id: string
+  quantity: number
+  price: number
+  orderId: string
+  productId: string
+  product: Product
+}
+
+export interface ProductFilters {
+  categories: string[]
+  priceRange: number[]
+  inStock: boolean
+  search: string
 }
