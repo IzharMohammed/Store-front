@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/utils";
 import { Order } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-async function fetchOrders(): Promise<{ products: Order[] }> {
+async function fetchOrders(): Promise<{ orders: Order[] }> {
   const response = await fetch("/api/orders", {
     method: "GET",
   });
@@ -29,7 +29,8 @@ export default function OrdersPage() {
   });
   console.log("response", response);
 
-  // const products = response?.order || [];
+  const orders_response = response?.orders || [];
+  console.log(orders_response);
 
   if (orders.length === 0) {
     return (

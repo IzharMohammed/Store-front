@@ -16,10 +16,10 @@ export default function SignupPage() {
     <div className="flex items-center justify-center min-h-screen">
       <Card className="relative w-[350px] overflow-hidden">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>
+          <CardTitle>Signup </CardTitle>
+          {/* <CardDescription>
             Enter your credentials to access your account.
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           <form>
@@ -40,7 +40,7 @@ export default function SignupPage() {
           </form>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button>Login</Button>
+          <Button variant="outline">Register</Button>
         </CardFooter>
         <BorderBeam
           duration={4}
