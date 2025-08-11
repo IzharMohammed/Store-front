@@ -12,11 +12,48 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+
+interface FormData {
+  email: string;
+  password: string;
+}
+
+async function signin(formData: FormData) {
+  const response = await fetch("/api/signin", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+  console.log("response", response);
+
+  if (!response.ok) {
+    throw new Error("Signup failed");
+  }
+
+  return response.json();
+}
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: signin,
+    onSuccess: (data) => {
+      console.log("Signin successful:", data);
+      router.push("/");
+    },
+    onError: (error) => {
+      console.error("Signin error:", error);
+    },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +70,7 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form", formData);
+    mutation.mutate(formData);
   };
 
   return (

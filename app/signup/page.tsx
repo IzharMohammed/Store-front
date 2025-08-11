@@ -14,11 +14,13 @@ import { Label } from "@/components/ui/label";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+
 interface FormData {
   name: string;
   email: string;
   password: string;
 }
+
 async function signup(formData: FormData) {
   const response = await fetch("/api/signup", {
     method: "POST",
