@@ -13,12 +13,44 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+}
+async function signup(formData: FormData) {
+  const response = await fetch("/api/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+  console.log("response", response);
+
+  if (!response.ok) {
+    throw new Error("Signup failed");
+  }
+
+  return response.json();
+}
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: signup,
+    onSuccess: (data) => {
+      console.log("Signup successful:", data);
+    },
+    onError: (error) => {
+      console.error("Signup error:", error);
+    },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +66,7 @@ export default function SignupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form", formData);
+    mutation.mutate(formData);
   };
 
   return (
