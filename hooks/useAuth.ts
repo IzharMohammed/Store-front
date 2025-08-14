@@ -18,7 +18,6 @@ interface UseAuthReturn {
     isLoading: boolean;
 
     // Actions
-    login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     refreshSession: () => void;
 }
@@ -45,40 +44,6 @@ export const useAuth = (): UseAuthReturn => {
         }
 
         setIsLoading(false);
-    }, []);
-
-    // Login function
-    const login = useCallback(async (email: string, password: string): Promise<void> => {
-        setIsLoading(true);
-
-        try {
-            const response = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ email, password })
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Login failed');
-            }
-
-            const data = await response.json();
-
-            // Update session manager
-            sessionManager.setAuthenticatedUser(data);
-
-            // Update local state
-            setIsAuthenticated(true);
-            setUser(data.user);
-            setAnonymousSessionId(null);
-
-        } finally {
-            setIsLoading(false);
-        }
     }, []);
 
     // Logout function
@@ -125,7 +90,6 @@ export const useAuth = (): UseAuthReturn => {
         sessionType: isAuthenticated ? 'authenticated' : 'anonymous',
         anonymousSessionId,
         isLoading,
-        login,
         logout,
         refreshSession
     };

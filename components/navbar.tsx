@@ -7,11 +7,31 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ShoppingCart, Heart, Menu, X, Sun, Moon } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  User,
+  LogOut,
+  Package,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +39,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { getTotalItems } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
-  const { user, logout } = useAuthStore();
+  const { isAuthenticated, user, isLoading, logout } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +48,25 @@ export function Navbar() {
         searchQuery
       )}`;
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((word) => word.charAt(0))
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -89,19 +128,65 @@ export function Navbar() {
               </Button>
             </Link>
 
-            {user ? (
-              <div className="flex items-center space-x-2">
-                <Link href="/orders">
-                  <Button variant="ghost">Orders</Button>
-                </Link>
-                <Button variant="ghost" onClick={logout}>
-                  Logout
-                </Button>
-              </div>
+            {/* Authentication Section */}
+            {isLoading ? (
+              <div className="animate-pulse bg-muted rounded-full w-8 h-8"></div>
+            ) : isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={`https://avatar.vercel.sh/${user.email}`}
+                        alt={user.name}
+                      />
+                      <AvatarFallback>
+                        {getUserInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>My Orders</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button variant="ghost">Login</Button>
+                  <Button variant="ghost">Sign In</Button>
                 </Link>
                 <Link href="/signup">
                   <Button>Sign Up</Button>
@@ -162,29 +247,60 @@ export function Navbar() {
                 </Button>
               </Link>
 
-              {user ? (
+              {/* Mobile Authentication Section */}
+              {isLoading ? (
+                <div className="flex items-center space-x-2 p-2">
+                  <div className="animate-pulse bg-muted rounded-full w-8 h-8"></div>
+                  <div className="animate-pulse bg-muted h-4 w-20 rounded"></div>
+                </div>
+              ) : isAuthenticated && user ? (
                 <>
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-muted/50 rounded-md">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={`https://avatar.vercel.sh/${user.email}`}
+                        alt={user.name}
+                      />
+                      <AvatarFallback>
+                        {getUserInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{user.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </Button>
+                  </Link>
+
                   <Link href="/orders" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
+                      <Package className="w-4 h-4 mr-2" />
                       My Orders
                     </Button>
                   </Link>
+
                   <Button
                     variant="ghost"
                     className="w-full justify-start"
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                   >
-                    Logout
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Log out
                   </Button>
                 </>
               ) : (
                 <>
                   <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
-                      Login
+                      Sign In
                     </Button>
                   </Link>
                   <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
