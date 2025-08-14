@@ -35,6 +35,9 @@ export async function POST(request: Request) {
         console.log("Backend response:", data);
 
         if (!response.ok) {
+            const errorData = await response.json().catch(() => null); // Gracefully handle if response is not JSON
+            console.error(`Backend error: ${response.status} ${response.statusText}`, errorData);
+
             return NextResponse.json(
                 {
                     success: false,
