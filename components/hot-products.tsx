@@ -14,7 +14,7 @@ const tabs = [
 
 // Update the return type to match your API response
 async function fetchProducts(): Promise<{ products: Product[] }> {
-  const response = await fetch("/api/products", {
+  const response = await fetch("/api/v1/products", {
     method: "GET",
   });
   return response.json();
@@ -22,7 +22,7 @@ async function fetchProducts(): Promise<{ products: Product[] }> {
 
 export function HotProducts() {
   const [activeTab, setActiveTab] = useState("featured");
-  
+
   const {
     data: response, // Changed from 'products' to 'response'
     error,
@@ -35,7 +35,7 @@ export function HotProducts() {
 
   // Extract the products array from the response
   const products = response?.products || [];
-  
+
   console.log("Full response:", response);
   console.log("Products array:", products);
 
