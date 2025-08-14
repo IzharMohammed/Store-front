@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_KEY = process.env.BACKEND_API_KEY;
-const BACKEND_URL = process.env.BACKEND_URL;
+// const API_KEY = process.env.BACKEND_API_KEY;
+// const BACKEND_URL = process.env.BACKEND_URL;
+const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 if (!API_KEY || !BACKEND_URL) {
     console.error('Missing required environment variables: BACKEND_API_KEY or BACKEND_URL');
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const response = await fetch(`${BACKEND_URL}/api/v1/order`, {
+        const response = await fetch(`${BACKEND_URL}/v1/order`, {
             method: 'GET',
             headers: {
                 'x-api-key': API_KEY,
@@ -59,6 +61,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const orderData = await req.json();
+        console.log("orderData", orderData);
 
         // Validate required fields
         if (!orderData.customerEmail || !orderData.customerName || !orderData.items || orderData.items.length === 0) {
@@ -68,7 +71,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const response = await fetch(`${BACKEND_URL}/api/v1/order`, {
+        const response = await fetch(`${BACKEND_URL}/v1/order`, {
             method: 'POST',
             headers: {
                 'x-api-key': API_KEY,
