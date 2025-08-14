@@ -100,3 +100,54 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+// DELETE - Remove item from cart
+export async function DELETE(req: NextRequest) {
+    if (!API_KEY || !BACKEND_URL) {
+        return NextResponse.json(
+            { success: false, message: 'Server configuration error' },
+            { status: 500 }
+        );
+    }
+
+    try {
+        const { cartId } = await req.json();
+
+        if (!cartId) {
+            return NextResponse.json(
+                { success: false, message: 'Cart ID is required' },
+                { status: 400 }
+            );
+        }
+
+        const response = await fetch(`${BACKEND_URL}/v1/cart`, {
+            method: 'DELETE',
+            headers: {
+                'x-api-key': API_KEY,
+                'Content-Type': 'application/json',
+                'Cookie': req.headers.get('cookie') || '',
+            },
+            body: JSON.stringify({ cartId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Backend API error:', data);
+            return NextResponse.json(data, { status: response.status });
+        }
+
+        return NextResponse.json(data, { status: 200 });
+
+    } catch (error) {
+        console.error('Failed to remove from cart:', error);
+        return NextResponse.json(
+            {
+                success: false,
+                message: 'Failed to remove from cart',
+                error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+            },
+            { status: 500 }
+        );
+    }
+}
