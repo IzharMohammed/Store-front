@@ -124,12 +124,15 @@ export default function PlaceOrderPage() {
     queryKey: ["products"],
     queryFn: async (): Promise<ProductsResponse> => {
       const response = await fetch("/api/v1/products", {
+        method: "GET",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+      // const response = await fetch("/api/v1/products", {
+      //   method: "GET",
+      // });
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }

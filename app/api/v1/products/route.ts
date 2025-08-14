@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 //                 method: "GET",
 //                 headers: {
 //                     "Content-Type": "application/json",
-//                     "x-api-key": process.env.API_KEY!,
+//                     "x-api-key": process.env.BACKEND_API_KEY!,
 //                 },
 //             }
 //         );
@@ -23,8 +23,10 @@ import { NextRequest, NextResponse } from 'next/server';
 //     }
 // }
 
-const API_KEY = process.env.BACKEND_API_KEY;
-const BACKEND_URL = process.env.BACKEND_URL;
+// const API_KEY = process.env.BACKEND_API_KEY;
+// const BACKEND_URL = process.env.BACKEND_URL;
+const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 if (!API_KEY || !BACKEND_URL) {
     console.error('Missing required environment variables: BACKEND_API_KEY or BACKEND_URL');
@@ -43,7 +45,7 @@ export async function GET(req: NextRequest) {
 
         // Forward query parameters if any
         const queryString = searchParams.toString();
-        const url = `${BACKEND_URL}/api/v1/products${queryString ? `?${queryString}` : ''}`;
+        const url = `${BACKEND_URL}/v1/products${queryString ? `?${queryString}` : ''}`;
 
         const response = await fetch(url, {
             method: 'GET',
