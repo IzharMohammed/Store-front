@@ -13,6 +13,7 @@ import { useWishlistStore } from "@/stores/wishlist-store";
 // import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/types/index";
 import { WishlistButton } from "./wishlist/wishlistButton";
+import AddToCartButton from "./cart/AddToCartButton";
 
 interface ProductCardProps {
   product: Product;
@@ -108,14 +109,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button
-          onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className="w-full"
-        >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Add to Cart
-        </Button>
+        <AddToCartButton productId={product.id} productName={product.name} />
       </CardFooter>
     </Card>
   );
