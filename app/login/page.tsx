@@ -54,7 +54,7 @@ async function signin(formData: FormData) {
   // const redirectUrl = (router.query.redirect as string) || "/dashboard";
   // router.push(redirectUrl);
 
-  return response.json();
+  return data;
 }
 
 export default function LoginPage() {
