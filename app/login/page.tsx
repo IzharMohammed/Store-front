@@ -11,13 +11,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BorderBeam } from "@/components/magicui/border-beam";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { sessionManager } from "@/lib/session-manager";
 
 interface FormData {
   email: string;
   password: string;
+}
+
+interface LoginResponse {
+  message: string;
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
 }
 
 async function signin(formData: FormData) {
@@ -34,6 +45,15 @@ async function signin(formData: FormData) {
     throw new Error("Signup failed");
   }
 
+  const data: LoginResponse = await response.json();
+
+  // Handle successful login
+  sessionManager.setAuthenticatedUser(data);
+
+  // // Redirect to dashboard or intended page
+  // const redirectUrl = (router.query.redirect as string) || "/dashboard";
+  // router.push(redirectUrl);
+
   return response.json();
 }
 
@@ -44,6 +64,16 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    // Initialize session management when component mounts
+    sessionManager.init();
+
+    // Check if user is already authenticated
+    if (sessionManager.isAuthenticated()) {
+      router.push("/"); // Redirect to dashboard or home page
+    }
+  }, [router]);
 
   const mutation = useMutation({
     mutationFn: signin,
