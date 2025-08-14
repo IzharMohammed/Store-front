@@ -47,3 +47,56 @@ export async function GET(req: NextRequest) {
         );
     }
 }
+
+// POST - Add item to cart
+export async function POST(req: NextRequest) {
+    if (!API_KEY || !BACKEND_URL) {
+        return NextResponse.json(
+            { success: false, message: 'Server configuration error' },
+            { status: 500 }
+        );
+    }
+
+    try {
+        const cartData = await req.json();
+        console.log("cartData", cartData);
+
+        // Validate required fields
+        if (!cartData.productId || !cartData.quantity || cartData.quantity <= 0) {
+            return NextResponse.json(
+                { success: false, message: 'Missing required cart data' },
+                { status: 400 }
+            );
+        }
+
+        const response = await fetch(`${BACKEND_URL}/v1/cart`, {
+            method: 'POST',
+            headers: {
+                'x-api-key': API_KEY,
+                'Content-Type': 'application/json',
+                'Cookie': req.headers.get('cookie') || '',
+            },
+            body: JSON.stringify(cartData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Backend API error:', data);
+            return NextResponse.json(data, { status: response.status });
+        }
+
+        return NextResponse.json(data, { status: 200 });
+
+    } catch (error) {
+        console.error('Failed to add to cart:', error);
+        return NextResponse.json(
+            {
+                success: false,
+                message: 'Failed to add to cart',
+                error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+            },
+            { status: 500 }
+        );
+    }
+}
