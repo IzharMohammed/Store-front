@@ -1,276 +1,535 @@
 "use client";
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
-import { sessionManager } from "@/lib/session-manager";
 
-interface OrderItem {
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2, Plus, Minus, ShoppingCart } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+// Zod schemas matching your backend
+const orderItemSchema = z.object({
+  productId: z.string().min(1, "Product ID is required"),
+  quantity: z.number().int().positive("Quantity must be positive"),
+  price: z.number().positive("Price must be positive"),
+});
+
+const createOrderSchema = z.object({
+  customerEmail: z.string().email("Valid email is required"),
+  customerName: z.string().min(1, "Name is required"),
+  customerPhone: z.string().min(1, "Phone number is required"),
+  shippingAddress: z.string().min(1, "Shipping address is required"),
+  total: z.number().positive("Total must be positive"),
+  items: z.array(orderItemSchema).min(1, "At least one item is required"),
+});
+
+type CreateOrderData = z.infer<typeof createOrderSchema>;
+
+interface Product {
   id: string;
-  productId: string;
-  quantity: number;
+  name: string;
+  description: string;
   price: number;
-  product?: {
-    id: string;
-    name: string;
-    description: string;
-  };
-}
-
-interface Order {
-  id: string;
-  customerEmail: string;
-  customerName: string;
-  customerPhone: string;
-  shippingAddress: string;
-  total: number;
-  status: "pending" | "confirmed" | "shipped" | "delivered";
+  stock: number;
+  image?: string;
+  category: string;
+  status: "ACTIVE" | "INACTIVE";
+  storeId: string;
   createdAt: string;
   updatedAt: string;
-  items: OrderItem[];
-  store?: {
-    id: string;
-    name: string;
-  };
 }
 
-interface OrdersResponse {
+interface ProductsResponse {
   success: boolean;
-  data: Order[];
+  data: Product[];
   count: number;
   message: string;
 }
 
-const OrderHistoryPage: React.FC = () => {
-  const {
-    isAuthenticated,
-    user,
-    sessionType,
-    isLoading: authLoading,
-  } = useAuth();
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+interface OrderResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
 
-  // Fetch orders
-  const {
-    data: ordersData,
-    isLoading: ordersLoading,
-    error,
-    refetch,
-  } = useQuery<OrdersResponse>({
-    queryKey: ["orders"],
-    queryFn: async () => {
-      const response = await sessionManager.apiRequest<OrdersResponse>(
-        "/api/v1/order"
-      );
-      return response;
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
     },
-    enabled: isAuthenticated, // Only fetch if authenticated
-    refetchInterval: 30000,
-    staleTime: 10000,
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+export default function PlaceOrderPage() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [pending, setPending] = useState(false);
+
+  // Form setup matching your pattern
+  const form = useForm<CreateOrderData>({
+    resolver: zodResolver(createOrderSchema),
+    defaultValues: {
+      customerEmail: "",
+      customerName: "",
+      customerPhone: "",
+      shippingAddress: "",
+      total: 0,
+      items: [],
+    },
   });
 
-  const orders = ordersData?.data || [];
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: "items",
+  });
 
-  const getStatusColor = (status: Order["status"]) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "confirmed":
-        return "bg-blue-100 text-blue-800";
-      case "shipped":
-        return "bg-purple-100 text-purple-800";
-      case "delivered":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+  // Watch items to calculate total
+  const watchedItems = form.watch("items");
+
+  // Calculate total whenever items change
+  useEffect(() => {
+    const total = watchedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    form.setValue("total", total);
+  }, [watchedItems, form]);
+
+  // Fetch products query
+  const { data: productsData, isLoading: productsLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: async (): Promise<ProductsResponse> => {
+      const response = await fetch("/api/v1/products", {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
+      return response.json();
+    },
+  });
+
+  const products = productsData?.data || [];
+
+  // Create order mutation
+  const createOrderMutation = useMutation({
+    mutationFn: async (orderData: CreateOrderData): Promise<OrderResponse> => {
+      const response = await fetch("/api/v1/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create order");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      alert("Order placed successfully!");
+      router.push("/orders");
+    },
+    onError: (error: any) => {
+      console.error("Order creation failed:", error);
+      alert(`Order failed: ${error.message || "Something went wrong"}`);
+    },
+  });
+
+  // Add product to cart
+  const addProductToCart = (product: Product) => {
+    const existingIndex = fields.findIndex(
+      (field) => field.productId === product.id
+    );
+
+    if (existingIndex >= 0) {
+      const existingItem = watchedItems[existingIndex];
+      if (existingItem.quantity < product.stock) {
+        update(existingIndex, {
+          ...existingItem,
+          quantity: existingItem.quantity + 1,
+        });
+      } else {
+        alert(`Only ${product.stock} items available in stock`);
+      }
+    } else {
+      if (product.stock > 0) {
+        append({
+          productId: product.id,
+          quantity: 1,
+          price: product.price,
+        });
+        setSelectedProducts((prev) => [...prev, product]);
+      } else {
+        alert("Product out of stock");
+      }
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  // Remove product from cart
+  const removeProductFromCart = (index: number) => {
+    const removedItem = fields[index];
+    remove(index);
+    setSelectedProducts((prev) =>
+      prev.filter((product) => product.id !== removedItem.productId)
+    );
+  };
+
+  // Update quantity
+  const updateQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeProductFromCart(index);
+      return;
+    }
+
+    const item = watchedItems[index];
+    const product = getProductById(item.productId);
+
+    if (product && newQuantity > product.stock) {
+      alert(`Only ${product.stock} items available in stock`);
+      return;
+    }
+
+    update(index, {
+      ...item,
+      quantity: newQuantity,
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+  const getProductById = (productId: string): Product | undefined => {
+    return (
+      selectedProducts.find((p) => p.id === productId) ||
+      products.find((p) => p.id === productId)
+    );
   };
 
-  if (authLoading) {
+  // Submit handler
+  const onSubmit = async (data: CreateOrderData) => {
+    if (data.items.length === 0) {
+      alert("Please add at least one product to your order");
+      return;
+    }
+
+    setPending(true);
+    try {
+      await createOrderMutation.mutateAsync(data);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  if (productsLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center p-6 max-w-md">
-          <h2 className="text-2xl font-bold mb-4">
-            Please sign in to view your orders
-          </h2>
-          <p className="mb-6">
-            You need to be logged in to access your order history.
-          </p>
-          <button
-            onClick={() => (window.location.href = "/login")}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Sign In
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (ordersLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="text-center p-6 max-w-md">
-          <h2 className="text-xl font-bold mb-4 text-red-600">
-            Error loading orders
-          </h2>
-          <p className="mb-6">{error.message}</p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Retry
-          </button>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Your Orders</h1>
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="space-y-8"
+      >
+        {/* Header */}
+        <motion.div variants={itemVariants} className="text-center">
+          <h1 className="text-3xl font-bold">Place Your Order</h1>
+          <p className="text-muted-foreground mt-2">
+            Select products and fill in your details to place an order
+          </p>
+        </motion.div>
 
-      {orders.length === 0 ? (
-        <div className="text-center py-12">
-          <h2 className="text-xl font-medium mb-4">No orders found</h2>
-          <p>You haven't placed any orders yet.</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="p-4 border-b flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">
-                    Order #{order.id.split("-")[0]}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(order.createdAt)}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                      order.status
-                    )}`}
-                  >
-                    {order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)}
-                  </span>
-                  <span className="font-medium">
-                    {formatCurrency(order.total)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Shipping Address</h4>
-                    <p>{order.shippingAddress}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Contact</h4>
-                    <p>{order.customerName}</p>
-                    <p>{order.customerEmail}</p>
-                    {order.customerPhone && <p>{order.customerPhone}</p>}
-                  </div>
-                  {order.store && (
-                    <div>
-                      <h4 className="font-medium mb-2">Store</h4>
-                      <p>{order.store.name}</p>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() =>
-                    setSelectedOrder(
-                      selectedOrder?.id === order.id ? null : order
-                    )
-                  }
-                  className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
-                  {selectedOrder?.id === order.id
-                    ? "Hide details"
-                    : "View details"}
-                </button>
-
-                {selectedOrder?.id === order.id && (
-                  <div className="mt-4 border-t pt-4">
-                    <h4 className="font-medium mb-3">Order Items</h4>
-                    <div className="space-y-3">
-                      {order.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex justify-between items-start"
-                        >
-                          <div>
-                            <p className="font-medium">
-                              {item.product?.name ||
-                                `Product ${item.productId}`}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Products Section */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  Available Products ({products.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                  {products.map((product) => {
+                    const inCart = fields.find(
+                      (item) => item.productId === product.id
+                    );
+                    return (
+                      <Card key={product.id} className="relative">
+                        <CardContent className="p-4">
+                          <div className="space-y-2">
+                            <h3 className="font-semibold text-sm">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {product.description}
                             </p>
-                            {item.product?.description && (
-                              <p className="text-sm text-gray-500">
-                                {item.product.description}
-                              </p>
+                            <div className="flex justify-between items-center">
+                              <span className="font-bold text-green-600">
+                                ${product.price.toFixed(2)}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                Stock: {product.stock}
+                              </span>
+                            </div>
+                            {inCart ? (
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-medium">
+                                  In cart: {inCart.quantity}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => addProductToCart(product)}
+                                  disabled={inCart.quantity >= product.stock}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                className="w-full"
+                                onClick={() => addProductToCart(product)}
+                                disabled={product.stock === 0}
+                              >
+                                {product.stock === 0
+                                  ? "Out of Stock"
+                                  : "Add to Cart"}
+                              </Button>
                             )}
                           </div>
-                          <div className="text-right">
-                            <p>
-                              {item.quantity} × {formatCurrency(item.price)}
-                            </p>
-                            <p className="font-medium">
-                              {formatCurrency(item.quantity * item.price)}
-                            </p>
-                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Order Form */}
+          <motion.div variants={itemVariants}>
+            <Card className="sticky top-4">
+              <CardHeader>
+                <CardTitle>Order Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <motion.form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                    variants={containerVariants}
+                  >
+                    {/* Customer Email */}
+                    <motion.div variants={itemVariants}>
+                      <FormField
+                        control={form.control}
+                        name="customerEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="email"
+                                placeholder="Enter your email"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+
+                    {/* Customer Name */}
+                    <motion.div variants={itemVariants}>
+                      <FormField
+                        control={form.control}
+                        name="customerName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="Enter your name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+
+                    {/* Customer Phone */}
+                    <motion.div variants={itemVariants}>
+                      <FormField
+                        control={form.control}
+                        name="customerPhone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Enter your phone"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+
+                    {/* Shipping Address */}
+                    <motion.div variants={itemVariants}>
+                      <FormField
+                        control={form.control}
+                        name="shippingAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Shipping Address</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                placeholder="Enter your address"
+                                rows={3}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+
+                    {/* Cart Items */}
+                    {fields.length > 0 && (
+                      <motion.div variants={itemVariants} className="space-y-3">
+                        <h3 className="font-semibold">Cart Items</h3>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {fields.map((field, index) => {
+                            const product = getProductById(field.productId);
+                            return (
+                              <div
+                                key={field.id}
+                                className="flex items-center justify-between p-2 bg-muted rounded"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">
+                                    {product?.name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    ${field.price} × {field.quantity} = $
+                                    {(field.price * field.quantity).toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      updateQuantity(index, field.quantity - 1)
+                                    }
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <span className="w-8 text-center text-sm">
+                                    {field.quantity}
+                                  </span>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      updateQuantity(index, field.quantity + 1)
+                                    }
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+                      </motion.div>
+                    )}
+
+                    {/* Total */}
+                    <motion.div
+                      variants={itemVariants}
+                      className="pt-4 border-t"
+                    >
+                      <div className="flex justify-between items-center font-semibold">
+                        <span>Total:</span>
+                        <span className="text-green-600">
+                          ${form.watch("total").toFixed(2)}
+                        </span>
+                      </div>
+                    </motion.div>
+
+                    {/* Submit Button */}
+                    <motion.div variants={itemVariants}>
+                      <Button
+                        type="submit"
+                        className={cn(
+                          "w-full",
+                          pending &&
+                            "opacity-50 cursor-not-allowed pointer-events-none"
+                        )}
+                        disabled={pending || fields.length === 0}
+                      >
+                        {pending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Placing Order...
+                          </>
+                        ) : (
+                          "Place Order"
+                        )}
+                      </Button>
+                    </motion.div>
+                  </motion.form>
+                </Form>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
-      )}
+      </motion.div>
     </div>
   );
-};
-
-export default OrderHistoryPage;
+}
