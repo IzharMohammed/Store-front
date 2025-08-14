@@ -18,11 +18,11 @@ export interface CartItem {
   addedAt: Date
 }
 
-export interface WishlistItem {
-  id: string
-  product: Product
-  addedAt: Date
-}
+// export interface WishlistItem {
+//   id: string
+//   product: Product
+//   addedAt: Date
+// }
 
 export interface User {
   id: string
@@ -65,4 +65,34 @@ export interface ProductFilters {
   priceRange: number[]
   inStock: boolean
   search: string
+}
+
+export interface WishlistItem {
+  id: string;
+  productId: string;
+  customerId?: string;
+  sessionId?: string;
+  createdAt: string;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image?: string;
+    description?: string;
+    category: string;
+    stock: number;
+  };
+}
+
+export interface WishlistResponse {
+  success: boolean;
+  data: WishlistItem[];
+  count: number;
+  message: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
 }
