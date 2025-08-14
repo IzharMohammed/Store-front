@@ -10,7 +10,7 @@ export default function HomePage() {
       <div className="container mx-auto px-4">
         <Categories />
         <HotProducts />
-        <FeaturedProducts />
+        {/* <FeaturedProducts /> */}
       </div>
     </div>
   );

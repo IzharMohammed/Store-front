@@ -9,7 +9,13 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,9 +24,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, Plus, Minus, ShoppingCart } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Minus,
+  ShoppingCart,
+  ChevronRight,
+  Package,
+  MapPin,
+  User,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 // Zod schemas matching your backend
 const orderItemSchema = z.object({
@@ -264,6 +280,277 @@ export default function PlaceOrderPage() {
   }
 
   return (
+    // <div className="container mx-auto py-8 px-4 max-w-7xl">
+    //   <motion.div
+    //     initial="hidden"
+    //     animate="visible"
+    //     variants={containerVariants}
+    //     className="space-y-8"
+    //   >
+    //     {/* Header */}
+    //     <motion.div variants={itemVariants} className="text-center">
+    //       <h1 className="text-3xl font-bold">Place Your Order</h1>
+    //       <p className="text-muted-foreground mt-2">
+    //         Select products and fill in your details to place an order
+    //       </p>
+    //     </motion.div>
+
+    //     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    //       {/* Products Section */}
+    //       <motion.div variants={itemVariants} className="lg:col-span-2">
+    //         <Card>
+    //           <CardHeader>
+    //             <CardTitle className="flex items-center gap-2">
+    //               <ShoppingCart className="h-5 w-5" />
+    //               Available Products ({products.length})
+    //             </CardTitle>
+    //           </CardHeader>
+    //           <CardContent>
+    //             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+    //               {products.map((product) => {
+    //                 const inCart = fields.find(
+    //                   (item) => item.productId === product.id
+    //                 );
+    //                 return (
+    //                   <Card key={product.id} className="relative">
+    //                     <CardContent className="p-4">
+    //                       <div className="space-y-2">
+    //                         <img src={product.image} alt="" />
+    //                         <h3 className="font-semibold text-sm">
+    //                           {product.name}
+    //                         </h3>
+    //                         <p className="text-xs text-muted-foreground line-clamp-2">
+    //                           {product.description}
+    //                         </p>
+    //                         <div className="flex justify-between items-center">
+    //                           <span className="font-bold text-green-600">
+    //                             ${product.price.toFixed(2)}
+    //                           </span>
+    //                           <span className="text-xs text-muted-foreground">
+    //                             Stock: {product.stock}
+    //                           </span>
+    //                         </div>
+    //                         {inCart ? (
+    //                           <div className="flex items-center justify-between">
+    //                             <span className="text-xs font-medium">
+    //                               In cart: {inCart.quantity}
+    //                             </span>
+    //                             <Button
+    //                               size="sm"
+    //                               variant="outline"
+    //                               onClick={() => addProductToCart(product)}
+    //                               disabled={inCart.quantity >= product.stock}
+    //                             >
+    //                               <Plus className="h-3 w-3" />
+    //                             </Button>
+    //                           </div>
+    //                         ) : (
+    //                           <Button
+    //                             size="sm"
+    //                             className="w-full"
+    //                             onClick={() => addProductToCart(product)}
+    //                             disabled={product.stock === 0}
+    //                           >
+    //                             {product.stock === 0
+    //                               ? "Out of Stock"
+    //                               : "Add to Cart"}
+    //                           </Button>
+    //                         )}
+    //                       </div>
+    //                     </CardContent>
+    //                   </Card>
+    //                 );
+    //               })}
+    //             </div>
+    //           </CardContent>
+    //         </Card>
+    //       </motion.div>
+
+    //       {/* Order Form */}
+    //       <motion.div variants={itemVariants}>
+    //         <Card className="sticky top-4">
+    //           <CardHeader>
+    //             <CardTitle>Order Details</CardTitle>
+    //           </CardHeader>
+    //           <CardContent>
+    //             <Form {...form}>
+    //               <motion.form
+    //                 onSubmit={form.handleSubmit(onSubmit)}
+    //                 className="space-y-4"
+    //                 variants={containerVariants}
+    //               >
+    //                 {/* Customer Email */}
+    //                 <motion.div variants={itemVariants}>
+    //                   <FormField
+    //                     control={form.control}
+    //                     name="customerEmail"
+    //                     render={({ field }) => (
+    //                       <FormItem>
+    //                         <FormLabel>Email</FormLabel>
+    //                         <FormControl>
+    //                           <Input
+    //                             {...field}
+    //                             type="email"
+    //                             placeholder="Enter your email"
+    //                           />
+    //                         </FormControl>
+    //                         <FormMessage />
+    //                       </FormItem>
+    //                     )}
+    //                   />
+    //                 </motion.div>
+
+    //                 {/* Customer Name */}
+    //                 <motion.div variants={itemVariants}>
+    //                   <FormField
+    //                     control={form.control}
+    //                     name="customerName"
+    //                     render={({ field }) => (
+    //                       <FormItem>
+    //                         <FormLabel>Name</FormLabel>
+    //                         <FormControl>
+    //                           <Input {...field} placeholder="Enter your name" />
+    //                         </FormControl>
+    //                         <FormMessage />
+    //                       </FormItem>
+    //                     )}
+    //                   />
+    //                 </motion.div>
+
+    //                 {/* Customer Phone */}
+    //                 <motion.div variants={itemVariants}>
+    //                   <FormField
+    //                     control={form.control}
+    //                     name="customerPhone"
+    //                     render={({ field }) => (
+    //                       <FormItem>
+    //                         <FormLabel>Phone</FormLabel>
+    //                         <FormControl>
+    //                           <Input
+    //                             {...field}
+    //                             placeholder="Enter your phone"
+    //                           />
+    //                         </FormControl>
+    //                         <FormMessage />
+    //                       </FormItem>
+    //                     )}
+    //                   />
+    //                 </motion.div>
+
+    //                 {/* Shipping Address */}
+    //                 <motion.div variants={itemVariants}>
+    //                   <FormField
+    //                     control={form.control}
+    //                     name="shippingAddress"
+    //                     render={({ field }) => (
+    //                       <FormItem>
+    //                         <FormLabel>Shipping Address</FormLabel>
+    //                         <FormControl>
+    //                           <Textarea
+    //                             {...field}
+    //                             placeholder="Enter your address"
+    //                             rows={3}
+    //                           />
+    //                         </FormControl>
+    //                         <FormMessage />
+    //                       </FormItem>
+    //                     )}
+    //                   />
+    //                 </motion.div>
+
+    //                 {/* Cart Items */}
+    //                 {fields.length > 0 && (
+    //                   <motion.div variants={itemVariants} className="space-y-3">
+    //                     <h3 className="font-semibold">Cart Items</h3>
+    //                     <div className="space-y-2 max-h-32 overflow-y-auto">
+    //                       {fields.map((field, index) => {
+    //                         const product = getProductById(field.productId);
+    //                         return (
+    //                           <div
+    //                             key={field.id}
+    //                             className="flex items-center justify-between p-2 bg-muted rounded"
+    //                           >
+    //                             <div className="flex-1 min-w-0">
+    //                               <p className="text-sm font-medium truncate">
+    //                                 {product?.name}
+    //                               </p>
+    //                               <p className="text-xs text-muted-foreground">
+    //                                 ${field.price} × {field.quantity} = $
+    //                                 {(field.price * field.quantity).toFixed(2)}
+    //                               </p>
+    //                             </div>
+    //                             <div className="flex items-center gap-1">
+    //                               <Button
+    //                                 size="sm"
+    //                                 variant="outline"
+    //                                 onClick={() =>
+    //                                   updateQuantity(index, field.quantity - 1)
+    //                                 }
+    //                               >
+    //                                 <Minus className="h-3 w-3" />
+    //                               </Button>
+    //                               <span className="w-8 text-center text-sm">
+    //                                 {field.quantity}
+    //                               </span>
+    //                               <Button
+    //                                 size="sm"
+    //                                 variant="outline"
+    //                                 onClick={() =>
+    //                                   updateQuantity(index, field.quantity + 1)
+    //                                 }
+    //                               >
+    //                                 <Plus className="h-3 w-3" />
+    //                               </Button>
+    //                             </div>
+    //                           </div>
+    //                         );
+    //                       })}
+    //                     </div>
+    //                   </motion.div>
+    //                 )}
+
+    //                 {/* Total */}
+    //                 <motion.div
+    //                   variants={itemVariants}
+    //                   className="pt-4 border-t"
+    //                 >
+    //                   <div className="flex justify-between items-center font-semibold">
+    //                     <span>Total:</span>
+    //                     <span className="text-green-600">
+    //                       ${form.watch("total").toFixed(2)}
+    //                     </span>
+    //                   </div>
+    //                 </motion.div>
+
+    //                 {/* Submit Button */}
+    //                 <motion.div variants={itemVariants}>
+    //                   <Button
+    //                     type="submit"
+    //                     className={cn(
+    //                       "w-full",
+    //                       pending &&
+    //                         "opacity-50 cursor-not-allowed pointer-events-none"
+    //                     )}
+    //                     disabled={pending || fields.length === 0}
+    //                   >
+    //                     {pending ? (
+    //                       <>
+    //                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+    //                         Placing Order...
+    //                       </>
+    //                     ) : (
+    //                       "Place Order"
+    //                     )}
+    //                   </Button>
+    //                 </motion.div>
+    //               </motion.form>
+    //             </Form>
+    //           </CardContent>
+    //         </Card>
+    //       </motion.div>
+    //     </div>
+    //   </motion.div>
+    // </div>
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <motion.div
         initial="hidden"
@@ -272,55 +559,109 @@ export default function PlaceOrderPage() {
         className="space-y-8"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="text-center">
-          <h1 className="text-3xl font-bold">Place Your Order</h1>
-          <p className="text-muted-foreground mt-2">
-            Select products and fill in your details to place an order
+        <motion.div variants={itemVariants} className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Place Your Order
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Select products and fill in your details to complete your purchase
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Products Section */}
-          <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+          {/* Products Section - Now with larger cards */}
+          <motion.div
+            variants={itemVariants}
+            className="lg:col-span-2 space-y-6"
+          >
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl flex items-center gap-3">
                   <ShoppingCart className="h-5 w-5" />
-                  Available Products ({products.length})
+                  Available Products
+                  <span className="ml-auto text-base font-normal text-muted-foreground">
+                    {products.length} items
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {products.map((product) => {
                     const inCart = fields.find(
                       (item) => item.productId === product.id
                     );
                     return (
-                      <Card key={product.id} className="relative">
-                        <CardContent className="p-4">
-                          <div className="space-y-2">
-                            <h3 className="font-semibold text-sm">
-                              {product.name}
-                            </h3>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                              {product.description}
-                            </p>
+                      <Card
+                        key={product.id}
+                        className="hover:shadow-md transition-shadow"
+                      >
+                        <CardContent className="p-0">
+                          <div className="relative aspect-square w-full">
+                            {product.image ? (
+                              <Image
+                                src={product.image}
+                                alt={product.name}
+                                fill
+                                className="object-cover rounded-t-lg"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-muted flex items-center justify-center">
+                                <Package className="h-8 w-8 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-4 space-y-3">
+                            <div>
+                              <h3 className="font-semibold text-lg line-clamp-1">
+                                {product.name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {product.description}
+                              </p>
+                            </div>
                             <div className="flex justify-between items-center">
-                              <span className="font-bold text-green-600">
+                              <span className="font-bold text-lg">
                                 ${product.price.toFixed(2)}
                               </span>
-                              <span className="text-xs text-muted-foreground">
-                                Stock: {product.stock}
+                              <span
+                                className={cn(
+                                  "text-sm px-2 py-1 rounded-full",
+                                  product.stock > 10
+                                    ? "text-green-600 bg-green-50"
+                                    : product.stock > 0
+                                    ? "text-yellow-600 bg-yellow-50"
+                                    : "text-red-600 bg-red-50"
+                                )}
+                              >
+                                {product.stock > 0
+                                  ? `${product.stock} in stock`
+                                  : "Out of stock"}
                               </span>
                             </div>
                             {inCart ? (
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-medium">
-                                  In cart: {inCart.quantity}
+                              <div className="flex items-center justify-between gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() =>
+                                    updateQuantity(
+                                      fields.findIndex(
+                                        (f) => f.productId === product.id
+                                      ),
+                                      inCart.quantity - 1
+                                    )
+                                  }
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="text-sm font-medium">
+                                  {inCart.quantity} in cart
                                 </span>
                                 <Button
-                                  size="sm"
                                   variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
                                   onClick={() => addProductToCart(product)}
                                   disabled={inCart.quantity >= product.stock}
                                 >
@@ -329,7 +670,6 @@ export default function PlaceOrderPage() {
                               </div>
                             ) : (
                               <Button
-                                size="sm"
                                 className="w-full"
                                 onClick={() => addProductToCart(product)}
                                 disabled={product.stock === 0}
@@ -349,159 +689,219 @@ export default function PlaceOrderPage() {
             </Card>
           </motion.div>
 
-          {/* Order Form */}
+          {/* Order Form - More prominent */}
           <motion.div variants={itemVariants}>
-            <Card className="sticky top-4">
+            <Card className="sticky top-4 shadow-lg border-0">
               <CardHeader>
-                <CardTitle>Order Details</CardTitle>
+                <CardTitle className="text-xl">Order Summary</CardTitle>
+                <CardDescription>
+                  Review your items and enter your details
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
                   <motion.form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
+                    className="space-y-6"
                     variants={containerVariants}
                   >
-                    {/* Customer Email */}
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="customerEmail"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="Enter your email"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
+                    {/* Customer Info Section */}
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Customer Information
+                      </h3>
 
-                    {/* Customer Name */}
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="customerName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Enter your name" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-
-                    {/* Customer Phone */}
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="customerPhone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter your phone"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-
-                    {/* Shipping Address */}
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="shippingAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Shipping Address</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                {...field}
-                                placeholder="Enter your address"
-                                rows={3}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-
-                    {/* Cart Items */}
-                    {fields.length > 0 && (
-                      <motion.div variants={itemVariants} className="space-y-3">
-                        <h3 className="font-semibold">Cart Items</h3>
-                        <div className="space-y-2 max-h-32 overflow-y-auto">
-                          {fields.map((field, index) => {
-                            const product = getProductById(field.productId);
-                            return (
-                              <div
-                                key={field.id}
-                                className="flex items-center justify-between p-2 bg-muted rounded"
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">
-                                    {product?.name}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    ${field.price} × {field.quantity} = $
-                                    {(field.price * field.quantity).toFixed(2)}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      updateQuantity(index, field.quantity - 1)
-                                    }
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </Button>
-                                  <span className="w-8 text-center text-sm">
-                                    {field.quantity}
-                                  </span>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      updateQuantity(index, field.quantity + 1)
-                                    }
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="customerEmail"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email Address</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="email"
+                                  placeholder="your@email.com"
+                                  className="h-11 text-base"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </motion.div>
+
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="customerName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Full Name</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="John Doe"
+                                  className="h-11 text-base"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="customerPhone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Phone Number</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="+1 (555) 123-4567"
+                                  className="h-11 text-base"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Shipping Section */}
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        Shipping Information
+                      </h3>
+
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          control={form.control}
+                          name="shippingAddress"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Shipping Address</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  {...field}
+                                  placeholder="123 Main St, City, State ZIP"
+                                  rows={3}
+                                  className="text-base"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Cart Items Section */}
+                    {fields.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg flex items-center gap-2">
+                          <ShoppingCart className="h-4 w-4" />
+                          Your Cart ({fields.length})
+                        </h3>
+
+                        <motion.div
+                          variants={itemVariants}
+                          className="space-y-3"
+                        >
+                          <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            {fields.map((field, index) => {
+                              const product = getProductById(field.productId);
+                              return (
+                                <div
+                                  key={field.id}
+                                  className="flex items-start gap-4 p-3 bg-muted/30 rounded-lg"
+                                >
+                                  <div className="relative h-16 w-16 min-w-[64px] rounded-md overflow-hidden bg-muted">
+                                    {product?.image ? (
+                                      <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    ) : (
+                                      <Package className="h-full w-full p-2 text-muted-foreground" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0 space-y-1">
+                                    <h4 className="font-medium text-sm line-clamp-1">
+                                      {product?.name}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      ${field.price.toFixed(2)} ×{" "}
+                                      {field.quantity}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() =>
+                                        updateQuantity(
+                                          index,
+                                          field.quantity - 1
+                                        )
+                                      }
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
+                                    <span className="w-6 text-center text-sm">
+                                      {field.quantity}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() =>
+                                        updateQuantity(
+                                          index,
+                                          field.quantity + 1
+                                        )
+                                      }
+                                      disabled={
+                                        field.quantity >= (product?.stock || 0)
+                                      }
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      </div>
                     )}
 
-                    {/* Total */}
+                    {/* Total Section */}
                     <motion.div
                       variants={itemVariants}
-                      className="pt-4 border-t"
+                      className="space-y-4 pt-4 border-t"
                     >
-                      <div className="flex justify-between items-center font-semibold">
-                        <span>Total:</span>
-                        <span className="text-green-600">
-                          ${form.watch("total").toFixed(2)}
-                        </span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span>${form.watch("total").toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span className="text-green-600">Free</span>
+                      </div>
+                      <div className="flex justify-between items-center font-bold text-lg pt-2">
+                        <span>Total</span>
+                        <span>${form.watch("total").toFixed(2)}</span>
                       </div>
                     </motion.div>
 
@@ -509,20 +909,23 @@ export default function PlaceOrderPage() {
                     <motion.div variants={itemVariants}>
                       <Button
                         type="submit"
+                        size="lg"
                         className={cn(
-                          "w-full",
-                          pending &&
-                            "opacity-50 cursor-not-allowed pointer-events-none"
+                          "w-full text-base",
+                          pending && "opacity-50 cursor-not-allowed"
                         )}
                         disabled={pending || fields.length === 0}
                       >
                         {pending ? (
                           <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Placing Order...
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Processing...
                           </>
                         ) : (
-                          "Place Order"
+                          <>
+                            Complete Order
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                          </>
                         )}
                       </Button>
                     </motion.div>
