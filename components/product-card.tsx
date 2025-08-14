@@ -77,7 +77,14 @@ export function ProductCard({ product }: ProductCardProps) {
               }`}
             />
           </Button> */}
-          <WishlistButton productId={product.id} />
+          <div className="absolute top-2 right-2">
+            <WishlistButton
+              productId={product.id}
+              variant="ghost"
+              size="default"
+              className="bg-white/80 hover:bg-white"
+            />
+          </div>
         </div>
       </Link>
 

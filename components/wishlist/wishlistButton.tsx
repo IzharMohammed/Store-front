@@ -105,19 +105,15 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
       size={size}
       onClick={handleToggleWishlist}
       disabled={isLoading}
-      className={cn(className)}
-    >
-      <Heart
-        className={cn(
-          "w-4 h-4",
-          isInWishlist ? "fill-current text-red-500" : ""
-        )}
-      />
-      {size !== "sm" && (
-        <span className="ml-2">
-          {isInWishlist ? "" : ""}
-        </span>
+      className={cn(
+        "h-8 w-8 p-0", // Fixed size for the icon button
+        className,
+        isInWishlist
+          ? "text-red-500 hover:text-red-600"
+          : "text-gray-500 hover:text-gray-600"
       )}
+    >
+      <Heart className={cn("w-4 h-4", isInWishlist ? "fill-current" : "")} />
     </Button>
   );
 };

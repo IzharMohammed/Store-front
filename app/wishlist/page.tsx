@@ -173,6 +173,7 @@ export default function WishlistPage() {
       return response.json();
     },
   });
+  console.log("wishlistData", wishlistData);
 
   const wishlistItems = wishlistData?.data || [];
 
