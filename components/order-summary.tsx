@@ -1,23 +1,26 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Package, Calendar } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import type { Order } from "@/types"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Package, Calendar } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import type { Order } from "@/types/index";
 
 interface OrderSummaryProps {
-  order: Order
+  order: Order;
 }
 
 const statusColors = {
-  PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+  PENDING:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
   PROCESSING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-  SHIPPED: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-  DELIVERED: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+  SHIPPED:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+  DELIVERED:
+    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
   CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-}
+};
 
 export function OrderSummary({ order }: OrderSummaryProps) {
   return (
@@ -54,7 +57,9 @@ export function OrderSummary({ order }: OrderSummaryProps) {
                   Qty: {item.quantity} × {formatCurrency(item.price)}
                 </p>
               </div>
-              <div className="text-sm font-medium">{formatCurrency(item.quantity * item.price)}</div>
+              <div className="text-sm font-medium">
+                {formatCurrency(item.quantity * item.price)}
+              </div>
             </div>
           ))}
         </div>
@@ -67,5 +72,5 @@ export function OrderSummary({ order }: OrderSummaryProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

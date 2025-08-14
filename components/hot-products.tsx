@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/types";
+import { Product } from "@/types/index";
 
 const tabs = [
   { id: "featured", label: "Featured" },
