@@ -46,3 +46,55 @@ export async function GET(req: NextRequest) {
         );
     }
 }
+
+// POST - Add to wishlist
+export async function POST(req: NextRequest) {
+    if (!API_KEY || !BACKEND_URL) {
+        return NextResponse.json(
+            { success: false, message: 'Server configuration error' },
+            { status: 500 }
+        );
+    }
+
+    try {
+        const wishlistData = await req.json();
+        console.log("wishlistData", wishlistData);
+
+        // Validate required fields
+        if (!wishlistData.productId) {
+            return NextResponse.json(
+                { success: false, message: 'Product ID is required' },
+                { status: 400 }
+            );
+        }
+
+        const response = await fetch(`${BACKEND_URL}/v1/wishlist`, {
+            method: 'POST',
+            headers: {
+                'x-api-key': API_KEY,
+                'Content-Type': 'application/json',
+                'Cookie': req.headers.get('cookie') || '',
+            },
+            body: JSON.stringify(wishlistData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Backend API error:', data);
+            return NextResponse.json(data, { status: response.status });
+        }
+
+        return NextResponse.json(data, { status: 201 });
+    } catch (error) {
+        console.error('Failed to add to wishlist:', error);
+        return NextResponse.json(
+            {
+                success: false,
+                message: 'Failed to add to wishlist',
+                error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+            },
+            { status: 500 }
+        );
+    }
+}
