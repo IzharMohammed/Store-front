@@ -17,7 +17,9 @@ async function fetchOrders(): Promise<{ orders: Order[] }> {
 
 export default function OrdersPage() {
   const { orders } = useOrderStore();
-
+  const token = sessionStorage.getItem("session_id");
+  console.log(token);
+  
   const {
     data: response,
     error,
