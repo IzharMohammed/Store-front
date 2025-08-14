@@ -115,7 +115,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
       />
       {size !== "sm" && (
         <span className="ml-2">
-          {isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+          {isInWishlist ? "" : ""}
         </span>
       )}
     </Button>

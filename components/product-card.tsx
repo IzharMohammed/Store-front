@@ -12,6 +12,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 // import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/types/index";
+import { WishlistButton } from "./wishlist/wishlistButton";
 
 interface ProductCardProps {
   product: Product;
@@ -19,8 +20,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCartStore();
-  const { addToWishlist, removeFromWishlist, isInWishlist } =
-    useWishlistStore();
+  // const { addToWishlist, removeFromWishlist, isInWishlist } =
+  //   useWishlistStore();
   //   const { toast } = useToast()
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -32,22 +33,22 @@ export function ProductCard({ product }: ProductCardProps) {
     // })
   };
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      //   toast({
-      //     title: "Removed from wishlist",
-      //     description: `${product.name} has been removed from your wishlist`,
-      //   })
-    } else {
-      addToWishlist(product);
-      //   toast({
-      //     title: "Added to wishlist",
-      //     description: `${product.name} has been added to your wishlist`,
-      //   })
-    }
-  };
+  // const handleWishlistToggle = (e: React.MouseEvent) => {
+  //   e.preventDefault();
+  //   if (isInWishlist(product.id)) {
+  //     removeFromWishlist(product.id);
+  //     //   toast({
+  //     //     title: "Removed from wishlist",
+  //     //     description: `${product.name} has been removed from your wishlist`,
+  //     //   })
+  //   } else {
+  //     addToWishlist(product);
+  //     //   toast({
+  //     //     title: "Added to wishlist",
+  //     //     description: `${product.name} has been added to your wishlist`,
+  //     //   })
+  //   }
+  // };
 
   return (
     <Card className="group hover:shadow-lg transition-shadow">
@@ -64,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
               Out of Stock
             </Badge>
           )}
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-white/80 hover:bg-white"
@@ -75,7 +76,8 @@ export function ProductCard({ product }: ProductCardProps) {
                 isInWishlist(product.id) ? "fill-current text-red-500" : ""
               }`}
             />
-          </Button>
+          </Button> */}
+          <WishlistButton productId={product.id} />
         </div>
       </Link>
 
