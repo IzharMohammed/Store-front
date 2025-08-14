@@ -91,6 +91,13 @@ export interface WishlistResponse {
   message: string;
 }
 
+export interface ProductResponse {
+  success: boolean;
+  data: Product[];
+  count: number;
+  message: string;
+}
+
 export interface ApiResponse {
   success: boolean;
   message: string;

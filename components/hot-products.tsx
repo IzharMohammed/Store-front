@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/types/index";
+import { Product, ProductResponse } from "@/types/index";
 
 const tabs = [
   { id: "featured", label: "Featured" },
@@ -13,7 +13,7 @@ const tabs = [
 ];
 
 // Update the return type to match your API response
-async function fetchProducts(): Promise<{ products: Product[] }> {
+async function fetchProducts(): Promise<ProductResponse> {
   const response = await fetch("/api/v1/products", {
     method: "GET",
   });
@@ -34,7 +34,7 @@ export function HotProducts() {
   });
 
   // Extract the products array from the response
-  const products = response?.products || [];
+  const products = response?.data || [];
 
   console.log("Full response:", response);
   console.log("Products array:", products);
