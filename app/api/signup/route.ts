@@ -1,37 +1,63 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
-    try {
+const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+if (!API_KEY || !BACKEND_URL) {
+    console.error('Missing required environment variables: NEXT_PUBLIC_BACKEND_API_KEY or NEXT_PUBLIC_BACKEND_URL');
+}
+
+export async function POST(request: Request) {
+    if (!API_KEY || !BACKEND_URL) {
+        return NextResponse.json(
+            { success: false, message: 'Server configuration error' },
+            { status: 500 }
+        );
+    }
+
+    try {
         const body = await request.json();
-        console.log("body", body);
+        console.log("Request body:", body);
 
         const response = await fetch(
-            `${process.env.BACKEND_URL}/v1/signup`,
+            `${BACKEND_URL}/v1/signup`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-api-key": process.env.API_KEY!,
+                    "x-api-key": API_KEY,
                 },
                 body: JSON.stringify(body),
             }
         );
 
         const data = await response.json();
-        console.log("data", data);
+        console.log("Backend response:", data);
 
         if (!response.ok) {
             return NextResponse.json(
-                { error: data.message || "Signup failed...!!!" },
+                {
+                    success: false,
+                    message: data.message || "Signup failed",
+                    error: data.error || null
+                },
                 { status: response.status }
-            )
+            );
         }
 
-        return NextResponse.json(data);
-    } catch (error) {
+        return NextResponse.json({
+            success: true,
+            data: data
+        });
+
+    } catch (error: any) {
+        console.error("Signup error:", error);
         return NextResponse.json(
-            { error: 'Failed to fetch products' },
+            {
+                success: false,
+                message: 'Failed to process signup',
+                error: error.message || 'Unknown error'
+            },
             { status: 500 }
         );
     }
