@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { useCartStore } from "@/stores/cart-store";
-import { useWishlistStore } from "@/stores/wishlist-store";
+// import { useWishlistStore } from "@/stores/wishlist-store";
 // import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/types/index";
 import { WishlistButton } from "./wishlist/wishlistButton";

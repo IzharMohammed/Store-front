@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCartStore } from "@/stores/cart-store";
-import { useWishlistStore } from "@/stores/wishlist-store";
+// import { useWishlistStore } from "@/stores/wishlist-store";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -38,7 +38,7 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
   const { getTotalItems } = useCartStore();
-  const { items: wishlistItems } = useWishlistStore();
+  // const { items: wishlistItems } = useWishlistStore();
   const { isAuthenticated, user, isLoading, logout } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -120,11 +120,11 @@ export function Navbar() {
             <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="relative">
                 <Heart className="w-5 h-5" />
-                {wishlistItems.length > 0 && (
+                {/* {wishlistItems.length > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
                     {wishlistItems.length}
                   </Badge>
-                )}
+                )} */}
               </Button>
             </Link>
 
@@ -237,7 +237,7 @@ export function Navbar() {
               <Link href="/wishlist" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   <Heart className="w-4 h-4 mr-2" />
-                  Wishlist ({wishlistItems.length})
+                  {/* Wishlist ({wishlistItems.length}) */}
                 </Button>
               </Link>
 
