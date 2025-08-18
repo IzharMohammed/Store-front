@@ -1,128 +1,31 @@
-// "use client";
-
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Trash2, ShoppingCart } from "lucide-react";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { useWishlistStore } from "@/stores/wishlist-store";
-// import { useCartStore } from "@/stores/cart-store";
-
-// export default function WishlistPage() {
-//   const { items, removeFromWishlist } = useWishlistStore();
-//   const { addToCart } = useCartStore();
-//   //   const { toast } = useToast()
-
-//   const handleAddToCart = (item: any) => {
-//     addToCart(item.product, 1);
-//     // toast({
-//     //   title: "Added to cart",
-//     //   description: `${item.product.name} has been added to your cart`,
-//     // })
-//   };
-
-//   const handleRemoveFromWishlist = (productId: string, productName: string) => {
-//     removeFromWishlist(productId);
-//     // toast({
-//     //   title: "Removed from wishlist",
-//     //   description: `${productName} has been removed from your wishlist`,
-//     // })
-//   };
-
-//   if (items.length === 0) {
-//     return (
-//       <div className="container mx-auto px-4 py-16 text-center">
-//         <h1 className="text-2xl font-bold mb-4">Your Wishlist</h1>
-//         <p className="text-muted-foreground mb-8">Your wishlist is empty</p>
-//         <Link href="/products">
-//           <Button>Continue Shopping</Button>
-//         </Link>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <h1 className="text-2xl font-bold mb-6">
-//         Your Wishlist ({items.length} items)
-//       </h1>
-
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-//         {items.map((item) => (
-//           <Card key={item.id} className="group">
-//             <CardContent className="p-4">
-//               <Link href={`/product/${item.product.id}`}>
-//                 <div className="aspect-square relative overflow-hidden rounded-lg mb-4">
-//                   <Image
-//                     src={
-//                       item.product.image ||
-//                       "/placeholder.svg?height=300&width=300"
-//                     }
-//                     alt={item.product.name}
-//                     fill
-//                     className="object-cover group-hover:scale-105 transition-transform"
-//                   />
-//                 </div>
-//               </Link>
-
-//               <div className="space-y-2">
-//                 <Link href={`/product/${item.product.id}`}>
-//                   <h3 className="font-semibold truncate hover:text-primary">
-//                     {item.product.name}
-//                   </h3>
-//                 </Link>
-//                 <p className="text-sm text-muted-foreground">
-//                   {item.product.category}
-//                 </p>
-//                 <p className="font-bold text-lg">${item.product.price}</p>
-
-//                 <div className="flex gap-2 pt-2">
-//                   <Button
-//                     onClick={() => handleAddToCart(item)}
-//                     disabled={item.product.stock === 0}
-//                     className="flex-1"
-//                     size="sm"
-//                   >
-//                     <ShoppingCart className="w-4 h-4 mr-2" />
-//                     Add to Cart
-//                   </Button>
-//                   <Button
-//                     variant="outline"
-//                     size="sm"
-//                     onClick={() =>
-//                       handleRemoveFromWishlist(
-//                         item.product.id,
-//                         item.product.name
-//                       )
-//                     }
-//                   >
-//                     <Trash2 className="w-4 h-4" />
-//                   </Button>
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useInView, AnimatePresence, Variants } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ShoppingCart, Trash2, ShoppingBag } from "lucide-react";
+import {
+  Heart,
+  ShoppingCart,
+  Trash2,
+  ShoppingBag,
+  Minus,
+  Plus,
+  ArrowRight,
+  Star,
+  Shield,
+  Zap,
+  Award,
+} from "lucide-react";
 import { z } from "zod";
 import { ApiResponse, WishlistItem, WishlistResponse } from "@/types";
 
+// Type-safe schemas
 const createWishlistSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
 });
@@ -134,26 +37,337 @@ const removeWishlistSchema = z.object({
 type CreateWishlistData = z.infer<typeof createWishlistSchema>;
 type RemoveWishlistData = z.infer<typeof removeWishlistSchema>;
 
-// Animation variants
-const containerVariants = {
+interface WishlistCardProps {
+  item: WishlistItem;
+  onRemove: (id: string) => void;
+  onAddToCart: (product: WishlistItem["product"]) => void;
+  isRemoving: boolean;
+}
+
+interface OrderSummaryProps {
+  items: WishlistItem[];
+  itemCount: number;
+}
+
+// Smooth animation variants
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: -20,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      duration: 0.6,
+    },
+  },
+  exit: {
+    opacity: 0,
+    x: 100,
+    scale: 0.95,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut",
+    },
+  },
 };
 
+const summaryVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 0.4,
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
+// Wishlist item card component
+const WishlistCard: React.FC<WishlistCardProps> = ({
+  item,
+  onRemove,
+  onAddToCart,
+  isRemoving,
+}) => {
+  const [quantity, setQuantity] = useState<number>(1);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { once: true, margin: "-50px" });
+
+  const handleQuantityChange = (delta: number): void => {
+    const newQuantity = Math.max(
+      1,
+      Math.min(item.product.stock || 999, quantity + delta)
+    );
+    setQuantity(newQuantity);
+  };
+
+  const totalPrice = item.product.price * quantity;
+
+  return (
+    <motion.div
+      ref={cardRef}
+      variants={itemVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      exit="exit"
+      layout
+      className="group"
+    >
+      <Card className="overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 bg-white">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Product Image */}
+            <div className="relative">
+              <div className="w-full sm:w-24 h-48 sm:h-24 relative bg-gray-50 rounded-lg overflow-hidden">
+                <Image
+                  src={item.product.image || "/placeholder.jpg"}
+                  alt={item.product.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+
+              {/* Remove button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => onRemove(item.id)}
+                disabled={isRemoving}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors duration-200 disabled:opacity-50"
+                aria-label="Remove from wishlist"
+              >
+                <Trash2 className="w-3 h-3" />
+              </motion.button>
+            </div>
+
+            {/* Product Details */}
+            <div className="flex-1 space-y-3">
+              <div>
+                <Link href={`/products/${item.product.id}`}>
+                  <h3 className="font-semibold text-gray-900 hover:text-purple-600 transition-colors duration-200 line-clamp-2">
+                    {item.product.name}
+                  </h3>
+                </Link>
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                  {item.product.description}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="secondary"
+                  className="text-xs bg-gray-100 text-gray-700"
+                >
+                  {item.product.category}
+                </Badge>
+                {item.product.stock <= 5 && item.product.stock > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="text-xs animate-pulse"
+                  >
+                    Only {item.product.stock} left!
+                  </Badge>
+                )}
+              </div>
+
+              {/* Quantity Controls */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-gray-200 rounded-lg">
+                  <motion.button
+                    whileHover={{ backgroundColor: "#f3f4f6" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= 1}
+                    className="p-2 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </motion.button>
+                  <span className="px-4 py-2 font-medium text-gray-900 min-w-[3rem] text-center">
+                    {quantity}
+                  </span>
+                  <motion.button
+                    whileHover={{ backgroundColor: "#f3f4f6" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= (item.product.stock || 999)}
+                    className="p-2 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </motion.button>
+                </div>
+                <span className="text-sm text-gray-600">
+                  ${item.product.price.toFixed(2)} each
+                </span>
+              </div>
+            </div>
+
+            {/* Price and Actions */}
+            <div className="flex flex-col items-end gap-4 sm:min-w-[120px]">
+              <div className="text-right">
+                <div className="text-2xl font-bold text-purple-600">
+                  ${totalPrice.toFixed(2)}
+                </div>
+                {quantity > 1 && (
+                  <div className="text-sm text-gray-500">
+                    ${item.product.price.toFixed(2)} × {quantity}
+                  </div>
+                )}
+              </div>
+
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full"
+              >
+                <Button
+                  onClick={() => onAddToCart(item.product)}
+                  disabled={item.product.stock === 0}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {item.product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+// Order Summary Component
+const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
+  const subtotal = items.reduce((sum, item) => sum + item.product.price, 0);
+  const savings = subtotal * 0.15; // 15% savings example
+  const total = subtotal - savings;
+
+  return (
+    <motion.div
+      variants={summaryVariants}
+      initial="hidden"
+      animate="visible"
+      className="sticky top-8"
+    >
+      <Card className="bg-white border border-gray-200 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Shield className="w-5 h-5 text-purple-600" />
+            <h2 className="text-lg font-semibold text-gray-900">
+              Wishlist Summary
+            </h2>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal ({itemCount} items)</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-green-600">
+              <span>You save</span>
+              <span>-${savings.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-400">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+            <hr className="border-gray-200" />
+            <div className="flex justify-between text-lg font-bold text-gray-900">
+              <span>Total</span>
+              <span className="text-purple-600">${total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-6 mb-6 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
+              <Shield className="w-4 h-4" />
+              <span>Secure</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="w-4 h-4" />
+              <span>Fast Ship</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Award className="w-4 h-4" />
+              <span>Quality</span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200">
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Add All to Cart
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </motion.div>
+
+            <Button
+              variant="outline"
+              className="w-full border-gray-200 hover:bg-gray-50 transition-colors duration-200"
+              asChild
+            >
+              <Link href="/products">Continue Shopping</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+// Loading skeleton
+const WishlistSkeleton: React.FC = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 3 }).map((_, index) => (
+      <Card key={index} className="border border-gray-200">
+        <CardContent className="p-6">
+          <div className="flex gap-6 animate-pulse">
+            <div className="w-24 h-24 bg-gray-200 rounded-lg" />
+            <div className="flex-1 space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+              <div className="h-8 bg-gray-200 rounded w-32" />
+            </div>
+            <div className="text-right space-y-2">
+              <div className="h-6 bg-gray-200 rounded w-16" />
+              <div className="h-10 bg-gray-200 rounded w-24" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+);
+
+// Main component
 export default function WishlistPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [pending, setPending] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const isHeaderInView = useInView(headerRef, { once: true });
 
   // Fetch wishlist query
   const { data: wishlistData, isLoading: wishlistLoading } = useQuery({
@@ -173,7 +387,6 @@ export default function WishlistPage() {
       return response.json();
     },
   });
-  console.log("wishlistData", wishlistData);
 
   const wishlistItems = wishlistData?.data || [];
 
@@ -194,43 +407,49 @@ export default function WishlistPage() {
       }
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      alert("Item removed from wishlist!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Remove from wishlist failed:", error);
-      alert(`Failed to remove: ${error.message || "Something went wrong"}`);
     },
   });
 
-  const handleRemoveFromWishlist = (itemId: string) => {
-    if (
-      confirm("Are you sure you want to remove this item from your wishlist?")
-    ) {
-      removeFromWishlistMutation.mutate(itemId);
-    }
+  const handleRemoveFromWishlist = (itemId: string): void => {
+    removeFromWishlistMutation.mutate(itemId);
   };
 
-  const handleAddToCart = (product: WishlistItem["product"]) => {
+  const handleAddToCart = (product: WishlistItem["product"]): void => {
     // Add your cart logic here
-    alert(`Added ${product.name} to cart!`);
+    console.log(`Added ${product.name} to cart!`);
   };
 
   if (wishlistLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <Card key={index} className="animate-pulse">
-              <CardContent className="p-4">
-                <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded"></div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="mb-6">
+                <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+              </div>
+              <WishlistSkeleton />
+            </div>
+            <div className="lg:col-span-1">
+              <Card className="border border-gray-200">
+                <CardContent className="p-6 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-32 mb-4" />
+                  <div className="space-y-3 mb-6">
+                    <div className="h-4 bg-gray-200 rounded" />
+                    <div className="h-4 bg-gray-200 rounded" />
+                    <div className="h-4 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-12 bg-gray-200 rounded" />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -238,133 +457,130 @@ export default function WishlistPage() {
 
   if (!wishlistItems.length) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12"
-        >
-          <div className="bg-gray-100 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-            <Heart className="w-12 h-12 text-gray-400" />
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Your wishlist is empty</h2>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Start adding products you love to your wishlist. You can save items
-            for later and never lose track of them.
-          </p>
-          <Link href="/products">
-            <Button>
-              <ShoppingBag className="w-4 h-4 mr-2" />
-              Start Shopping
-            </Button>
-          </Link>
-        </motion.div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center bg-white rounded-2xl p-12 shadow-sm border border-gray-200"
+          >
+            <motion.div
+              animate={{
+                y: [0, -10, 0],
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="w-24 h-24 mx-auto mb-8 bg-purple-100 rounded-full flex items-center justify-center"
+            >
+              <Heart className="w-12 h-12 text-purple-600" />
+            </motion.div>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Your wishlist is empty
+            </h2>
+
+            <p className="text-gray-600 mb-8 text-lg leading-relaxed max-w-md mx-auto">
+              Save items you love to your wishlist. Review them anytime and
+              easily move them to your cart.
+            </p>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                size="lg"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
+                asChild
+              >
+                <Link href="/products">
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  Start Shopping
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8"
-      >
-        <div>
-          <h1 className="text-3xl font-bold">My Wishlist</h1>
-          <p className="text-gray-600 mt-2">Items you've saved for later</p>
-        </div>
-        <Badge variant="secondary" className="text-sm px-3 py-1">
-          {wishlistData?.count || 0}{" "}
-          {wishlistData?.count === 1 ? "item" : "items"}
-        </Badge>
-      </motion.div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Header */}
+            <motion.div
+              ref={headerRef}
+              initial={{ opacity: 0, y: -20 }}
+              animate={isHeaderInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-purple-600" />
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900">Wishlist</h1>
+              </div>
+              <p className="text-gray-600">
+                {wishlistData?.count || 0} items in your wishlist
+              </p>
+            </motion.div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-      >
-        {wishlistItems.map((item) => (
-          <motion.div key={item.id} variants={itemVariants}>
-            <Card className="group hover:shadow-lg transition-shadow duration-200">
-              <CardContent className="p-4">
-                <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-gray-100">
-                  <Image
-                    src={item.product.image || "/placeholder.jpg"}
-                    alt={item.product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-200"
+            {/* Wishlist Items */}
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {wishlistItems.map((item) => (
+                  <WishlistCard
+                    key={item.id}
+                    item={item}
+                    onRemove={handleRemoveFromWishlist}
+                    onAddToCart={handleAddToCart}
+                    isRemoving={removeFromWishlistMutation.isPending}
                   />
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      onClick={() => handleRemoveFromWishlist(item.id)}
-                      disabled={removeFromWishlistMutation.isPending}
-                      className="h-8 w-8 bg-white/80 hover:bg-white"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </Button>
-                  </div>
-                </div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
 
-                <div className="space-y-2">
-                  <Link href={`/products/${item.product.id}`}>
-                    <h3 className="font-medium text-sm line-clamp-2 hover:underline">
-                      {item.product.name}
-                    </h3>
-                  </Link>
+            {/* You might also like section */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="mt-12"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Heart className="w-5 h-5 text-purple-600" />
+                <h2 className="text-xl font-semibold text-gray-900">
+                  You might also like
+                </h2>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Based on items in your wishlist
+              </p>
+            </motion.div>
+          </div>
 
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary" className="font-semibold">
-                      ${item.product.price.toFixed(2)}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {item.product.category}
-                    </Badge>
-                  </div>
-
-                  {item.product.description && (
-                    <p className="text-xs text-gray-600 line-clamp-2">
-                      {item.product.description}
-                    </p>
-                  )}
-
-                  <div className="flex gap-2 mt-3">
-                    <Button
-                      onClick={() => handleAddToCart(item.product)}
-                      className="flex-1"
-                      size="sm"
-                      disabled={item.product.stock === 0}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      {item.product.stock === 0
-                        ? "Out of Stock"
-                        : "Add to Cart"}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-12 text-center"
-      >
-        <Link href="/products">
-          <Button variant="outline" size="lg">
-            <ShoppingBag className="w-4 h-4 mr-2" />
-            Continue Shopping
-          </Button>
-        </Link>
-      </motion.div>
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <OrderSummary
+              items={wishlistItems}
+              itemCount={wishlistData?.count || 0}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
