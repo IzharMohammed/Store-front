@@ -33,7 +33,6 @@ export default function AddToCartButton({
       quantity: number;
     }): Promise<AddToCartResponse> => {
       const token = localStorage.getItem("auth_token");
-      
       const response = await fetch("/api/v1/cart", {
         method: "POST",
         headers: {

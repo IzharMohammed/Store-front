@@ -48,6 +48,23 @@ export async function GET(req: NextRequest) {
     }
 }
 
+// Helper function to build headers
+const buildHeaders = (req: NextRequest) => {
+    const headers: Record<string, string> = {
+        'x-api-key': API_KEY!,
+        'Content-Type': 'application/json',
+        'Cookie': req.headers.get('cookie') || '',
+    };
+
+    // Forward Authorization header if present
+    const authHeader = req.headers.get('authorization');
+    if (authHeader) {
+        headers['Authorization'] = authHeader;
+    }
+
+    return headers;
+};
+
 // POST - Add item to cart
 export async function POST(req: NextRequest) {
     if (!API_KEY || !BACKEND_URL) {
@@ -69,21 +86,39 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Forward all cookies to backend
+        const cookieHeader = req.headers.get('cookie') || '';
+        console.log("Forwarding cookies:", cookieHeader);
+
         const response = await fetch(`${BACKEND_URL}/v1/cart`, {
             method: 'POST',
-            headers: {
-                'x-api-key': API_KEY,
-                'Content-Type': 'application/json',
-                'Cookie': req.headers.get('cookie') || '',
-            },
+            headers: buildHeaders(req),
             body: JSON.stringify(cartData)
         });
+
+        // const response = await fetch(`${BACKEND_URL}/v1/cart`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'x-api-key': API_KEY,
+        //         'Content-Type': 'application/json',
+        //         'Cookie': cookieHeader, // This forwards the Better Auth session cookie
+        //     },
+        //     body: JSON.stringify(cartData)
+        // });
 
         const data = await response.json();
 
         if (!response.ok) {
             console.error('Backend API error:', data);
             return NextResponse.json(data, { status: response.status });
+        }
+
+        // If backend sets any cookies in response, forward them to the client
+        const setCookieHeader = response.headers.get('set-cookie');
+        const nextResponse = NextResponse.json(data, { status: 200 });
+
+        if (setCookieHeader) {
+            nextResponse.headers.set('set-cookie', setCookieHeader);
         }
 
         return NextResponse.json(data, { status: 200 });
