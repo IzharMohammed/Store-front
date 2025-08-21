@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { getPasswordStrength } from "@/lib/password-strength";
 
 interface FormData {
   name: string;
@@ -122,6 +123,7 @@ export default function SignupPage() {
     },
   });
 
+
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,17 +139,6 @@ export default function SignupPage() {
     e.preventDefault();
     console.log("Form", formData);
     mutation.mutate(formData);
-  };
-
-  const getPasswordStrength = (password: string) => {
-    if (password.length === 0) return { strength: 0, label: "" };
-    if (password.length < 4)
-      return { strength: 25, label: "Weak", color: "bg-red-500" };
-    if (password.length < 8)
-      return { strength: 50, label: "Fair", color: "bg-yellow-500" };
-    if (password.length < 12)
-      return { strength: 75, label: "Good", color: "bg-blue-500" };
-    return { strength: 100, label: "Strong", color: "bg-green-500" };
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
@@ -498,7 +489,6 @@ export default function SignupPage() {
               </div>
             </Card>
           </motion.div>
-
         </motion.div>
       </div>
 
