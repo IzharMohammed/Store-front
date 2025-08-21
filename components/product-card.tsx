@@ -120,11 +120,9 @@
 import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ShoppingCart, Star, Eye, Zap } from "lucide-react";
-import { useCartStore } from "@/stores/cart-store";
+import { Star, Zap } from "lucide-react";
 import type { Product } from "@/types/index";
 import { WishlistButton } from "./wishlist/wishlistButton";
 import AddToCartButton from "./cart/AddToCartButton";
@@ -135,13 +133,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCartStore();
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    addToCart(product, 1);
-  };
-
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -186,38 +177,6 @@ export function ProductCard({ product }: ProductCardProps) {
               {product.stock} left
             </Badge>
           ) : null}
-
-          {/* Action Buttons Overlay */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileHover={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-x-0 bottom-3 flex items-center justify-center gap-2 px-3"
-          >
-            {/* Quick View */}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="bg-white/90 hover:bg-white text-black border-0 shadow-lg backdrop-blur-sm"
-              >
-                <Eye className="w-4 h-4" />
-              </Button>
-            </motion.div>
-
-            {/* Add to Cart */}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg"
-              >
-                <ShoppingCart className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            </motion.div>
-          </motion.div>
 
           {/* Wishlist Button */}
           <div className="absolute top-3 right-3">
@@ -307,7 +266,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Animated border */}
         <motion.div
-          className="absolute inset-0 rounded-lg"
+          className="absolute inset-0 rounded-lg pointer-events-none"
           whileHover={{
             boxShadow: "0 0 30px rgba(147, 51, 234, 0.3)",
           }}
