@@ -48,7 +48,7 @@ class SessionManager {
    */
   getAuthToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return sessionStorage.getItem(this.AUTH_TOKEN_KEY);
+    return localStorage.getItem(this.AUTH_TOKEN_KEY);
   }
 
   /**
@@ -56,7 +56,7 @@ class SessionManager {
    */
   getAuthUser(): AuthUser | null {
     if (typeof window === 'undefined') return null;
-    const userData = sessionStorage.getItem(this.USER_DATA_KEY);
+    const userData = localStorage.getItem(this.USER_DATA_KEY);
     return userData ? JSON.parse(userData) : null;
   }
 
@@ -67,8 +67,8 @@ class SessionManager {
     if (typeof window === 'undefined') return;
 
     // Store Better Auth token and user data
-    sessionStorage.setItem(this.AUTH_TOKEN_KEY, loginResponse.token);
-    sessionStorage.setItem(this.USER_DATA_KEY, JSON.stringify(loginResponse.user));
+    localStorage.setItem(this.AUTH_TOKEN_KEY, loginResponse.token);
+    localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(loginResponse.user));
 
     // Clear anonymous session since user is now authenticated
     this.clearAnonymousSession();
@@ -121,8 +121,8 @@ class SessionManager {
     }
 
     // Clear all session data
-    sessionStorage.removeItem(this.AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_DATA_KEY);
+    localStorage.removeItem(this.AUTH_TOKEN_KEY);
+    localStorage.removeItem(this.USER_DATA_KEY);
 
     // Regenerate anonymous session
     this.ensureAnonymousSession();
@@ -138,7 +138,7 @@ class SessionManager {
 
     // Add auth token if available
     // const token = this.getAuthToken();
-    const token = sessionStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token");
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
