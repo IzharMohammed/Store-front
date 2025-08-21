@@ -30,7 +30,7 @@ export const useAuth = (): UseAuthReturn => {
 
     // Initialize auth state
     const initializeAuth = useCallback(() => {
-        sessionManager.init();
+        // sessionManager.init();
 
         const authenticated = sessionManager.isAuthenticated();
         setIsAuthenticated(authenticated);

@@ -33,10 +33,13 @@ export default function AddToCartButton({
       productId: string;
       quantity: number;
     }): Promise<AddToCartResponse> => {
+      const token = sessionStorage.getItem("auth_token");
+      
       const response = await fetch("/api/v1/cart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
         body: JSON.stringify({ productId, quantity }),

@@ -1,138 +1,3 @@
-// "use client";
-
-// import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { BorderBeam } from "@/components/magicui/border-beam";
-// import { useState } from "react";
-// import { useMutation } from "@tanstack/react-query";
-
-// interface FormData {
-//   name: string;
-//   email: string;
-//   password: string;
-// }
-
-// async function signup(formData: FormData) {
-//   const response = await fetch("/api/signup", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(formData),
-//   });
-//   console.log("response", response);
-
-//   if (!response.ok) {
-//     throw new Error("Signup failed");
-//   }
-
-//   return response.json();
-// }
-
-// export default function SignupPage() {
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     password: "",
-//   });
-
-//   const mutation = useMutation({
-//     mutationFn: signup,
-//     onSuccess: (data) => {
-//       console.log("Signup successful:", data);
-//     },
-//     onError: (error) => {
-//       console.error("Signup error:", error);
-//     },
-//   });
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { id, value } = e.target;
-//     console.log([id, value]);
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       [id]: value,
-//     }));
-//   };
-
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     console.log("Form", formData);
-//     mutation.mutate(formData);
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen">
-//       <Card className="relative w-[350px] overflow-hidden">
-//         <CardHeader>
-//           <CardTitle>Signup </CardTitle>
-//           {/* <CardDescription>
-//             Enter your credentials to access your account.
-//           </CardDescription> */}
-//         </CardHeader>
-//         <CardContent>
-//           <form onSubmit={handleSubmit}>
-//             <div className="grid w-full items-center gap-4">
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label htmlFor="email">Name</Label>
-//                 <Input
-//                   id="name"
-//                   type="text"
-//                   placeholder="Enter your name"
-//                   value={formData.name}
-//                   onChange={handleChange}
-//                   required
-//                 />
-//               </div>
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label htmlFor="email">Email</Label>
-//                 <Input
-//                   id="email"
-//                   type="email"
-//                   placeholder="Enter your email"
-//                   value={formData.email}
-//                   onChange={handleChange}
-//                   required
-//                 />
-//               </div>
-//               <div className="flex flex-col space-y-1.5">
-//                 <Label htmlFor="password">Password</Label>
-//                 <Input
-//                   id="password"
-//                   type="password"
-//                   placeholder="Enter your password"
-//                   value={formData.password}
-//                   onChange={handleChange}
-//                   required
-//                 />
-//               </div>
-//             </div>
-//             <CardFooter className="flex justify-end p-0 pt-4">
-//               <Button type="submit">Login</Button>
-//             </CardFooter>
-//           </form>
-//         </CardContent>
-//         <BorderBeam
-//           duration={4}
-//           size={300}
-//           reverse
-//           className="from-transparent via-green-500 to-transparent"
-//         />
-//       </Card>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useState } from "react";
@@ -148,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-// BorderBeam component will be handled with CSS animations
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
@@ -158,14 +22,10 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle,
-  Shield,
   Eye,
   EyeOff,
   Sparkles,
-  Users,
   Zap,
-  Heart,
-  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -344,42 +204,6 @@ export default function SignupPage() {
           animate="visible"
           className="w-full max-w-md space-y-8"
         >
-          {/* Header Section */}
-          <motion.div variants={itemVariants} className="text-center space-y-4">
-            {/* <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-purple-600 to-pink-600 text-white shadow-lg mx-auto"
-            >
-              <User className="h-8 w-8" />
-            </motion.div> */}
-
-            {/* <div className="space-y-2">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 dark:from-gray-100 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                Join Our Community
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Create your account and start your journey
-              </p>
-            </div> */}
-
-            {/* Trust Indicators */}
-            {/* <div className="flex justify-center gap-6 pt-2">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span>Secure</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span>10K+ Users</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                <span>4.9 Rating</span>
-              </div>
-            </div> */}
-          </motion.div>
-
           {/* Signup Form */}
           <motion.div variants={itemVariants}>
             <Card className="relative overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-background/95 via-background to-background/95 backdrop-blur-xl">
@@ -675,31 +499,6 @@ export default function SignupPage() {
             </Card>
           </motion.div>
 
-          {/* Bottom Features */}
-          {/* <motion.div variants={itemVariants} className="text-center">
-            <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Bank-level Security
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <Zap className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">Instant Setup</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">24/7 Support</p>
-              </div>
-            </div>
-          </motion.div> */}
         </motion.div>
       </div>
 

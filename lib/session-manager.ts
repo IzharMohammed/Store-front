@@ -65,11 +65,11 @@ class SessionManager {
    */
   setAuthenticatedUser(loginResponse: LoginResponse): void {
     if (typeof window === 'undefined') return;
-    
+
     // Store Better Auth token and user data
     sessionStorage.setItem(this.AUTH_TOKEN_KEY, loginResponse.token);
     sessionStorage.setItem(this.USER_DATA_KEY, JSON.stringify(loginResponse.user));
-    
+
     // Clear anonymous session since user is now authenticated
     this.clearAnonymousSession();
   }
@@ -87,7 +87,7 @@ class SessionManager {
    */
   private ensureAnonymousSession(): void {
     if (typeof window === 'undefined') return;
-    
+
     if (!this.getAnonymousSessionId()) {
       const sessionId = this.generateUUID();
       localStorage.setItem(this.ANONYMOUS_SESSION_KEY, sessionId);
@@ -123,7 +123,7 @@ class SessionManager {
     // Clear all session data
     sessionStorage.removeItem(this.AUTH_TOKEN_KEY);
     sessionStorage.removeItem(this.USER_DATA_KEY);
-    
+
     // Regenerate anonymous session
     this.ensureAnonymousSession();
   }
@@ -137,7 +137,8 @@ class SessionManager {
     };
 
     // Add auth token if available
-    const token = this.getAuthToken();
+    // const token = this.getAuthToken();
+    const token = sessionStorage.getItem("auth_token");
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -169,7 +170,7 @@ class SessionManager {
    * Generate UUID for anonymous sessions
    */
   private generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0;
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
@@ -199,7 +200,7 @@ class SessionManager {
    * Subscribe to auth state changes
    */
   onAuthChange(callback: (isAuthenticated: boolean) => void): () => void {
-    if (typeof window === 'undefined') return () => {};
+    if (typeof window === 'undefined') return () => { };
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === this.AUTH_TOKEN_KEY) {
