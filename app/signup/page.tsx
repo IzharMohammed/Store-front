@@ -168,6 +168,7 @@ import {
   Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   name: string;
@@ -260,6 +261,8 @@ export default function SignupPage() {
       console.error("Signup error:", error);
     },
   });
+
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -662,6 +665,7 @@ export default function SignupPage() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="text-primary hover:text-primary/80 font-medium transition-colors"
+                      onClick={() => router.push("/login")}
                     >
                       Sign in instead →
                     </motion.button>

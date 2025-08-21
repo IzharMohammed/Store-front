@@ -395,22 +395,6 @@ export default function LoginPage() {
                 Sign in to your account to continue
               </p>
             </div>
-
-            {/* Trust Indicators */}
-            <div className="flex justify-center gap-6 pt-2">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span>Secure</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span>Trusted</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Zap className="h-4 w-4 text-yellow-500" />
-                <span>Fast Access</span>
-              </div>
-            </div>
           </motion.div>
 
           {/* Login Form */}
@@ -615,48 +599,14 @@ export default function LoginPage() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="text-primary hover:text-primary/80 font-medium transition-colors"
+                      onClick={() => router.push("/signup")}
                     >
                       Create an account →
-                    </motion.button>
-
-                    {/* Forgot Password Link */}
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="block w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      Forgot your password?
                     </motion.button>
                   </div>
                 </CardFooter>
               </div>
             </Card>
-          </motion.div>
-
-          {/* Bottom Features */}
-          <motion.div variants={itemVariants} className="text-center">
-            <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Bank-level Security
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <Zap className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">Quick Access</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-8 w-8 mx-auto rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xs text-muted-foreground">24/7 Support</p>
-              </div>
-            </div>
           </motion.div>
         </motion.div>
       </div>
