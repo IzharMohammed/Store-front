@@ -33,12 +33,21 @@ export default function AddToCartButton({
       quantity: number;
     }): Promise<AddToCartResponse> => {
       const token = localStorage.getItem("auth_token");
+      const userData = JSON.parse(localStorage.getItem("user_data")!);
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        credentials: "include",
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
       const response = await fetch("/api/v1/cart", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({ productId, quantity }),
       });

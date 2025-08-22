@@ -7,6 +7,26 @@ if (!API_KEY || !BACKEND_URL) {
     console.error('Missing required environment variables: BACKEND_API_KEY or BACKEND_URL');
 }
 
+// Helper function to build headers
+const buildHeaders = (req: NextRequest) => {
+    const headers: Record<string, string> = {
+        'x-api-key': API_KEY!,
+        'Content-Type': 'application/json',
+    };
+
+    // Forward ALL cookies (for Better Auth session)
+    const cookieHeader = req.headers.get('cookie');
+    if (cookieHeader) {
+        headers['Cookie'] = cookieHeader;
+    }
+
+    const userIdHeader = req.headers.get('x-user-id');
+
+    if (userIdHeader) headers['x-user-id'] = userIdHeader;
+    
+    return headers;
+};
+
 // GET - Fetch cart items
 export async function GET(req: NextRequest) {
     if (!API_KEY || !BACKEND_URL) {
@@ -47,23 +67,6 @@ export async function GET(req: NextRequest) {
         );
     }
 }
-
-// Helper function to build headers
-const buildHeaders = (req: NextRequest) => {
-    const headers: Record<string, string> = {
-        'x-api-key': API_KEY!,
-        'Content-Type': 'application/json',
-        'Cookie': req.headers.get('cookie') || '',
-    };
-
-    // Forward Authorization header if present
-    const authHeader = req.headers.get('authorization');
-    if (authHeader) {
-        headers['Authorization'] = authHeader;
-    }
-
-    return headers;
-};
 
 // POST - Add item to cart
 export async function POST(req: NextRequest) {

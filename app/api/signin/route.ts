@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 const API_KEY = process.env.NEXT_PUBLIC_BACKEND_API_KEY;
@@ -27,6 +28,8 @@ export async function POST(request: Request) {
                 headers: {
                     "Content-Type": "application/json",
                     "x-api-key": API_KEY,
+                    // Forward any existing cookies from the client
+                    // 'Cookie': request.headers.get('cookie') || ''
                 },
                 body: JSON.stringify(body),
             }
@@ -45,7 +48,32 @@ export async function POST(request: Request) {
             )
         }
 
-        return NextResponse.json(data);
+        // Create response
+        const nextResponse = NextResponse.json(data, { status: 200 });
+
+        // CRUCIAL: Forward all Set-Cookie headers from Better Auth backend to client
+        // const setCookieHeaders = response.headers.getSetCookie();
+        // if (setCookieHeaders.length > 0) {
+        //     setCookieHeaders.forEach(cookie => {
+        //         nextResponse.headers.append('Set-Cookie', cookie);
+        //     });
+        // }
+        // const setCookieHeader = response.headers.get("set-cookie");
+        // if (setCookieHeader) {
+        //     // parse cookie components, then:
+        //     (await cookies()).set({
+        //         name: "izhar",
+        //         value: "izhar",
+        //         httpOnly: true,
+        //         path: "/",
+        //         sameSite: "none",
+        //         secure: true
+        //     });
+        // }
+        // console.log("nextResponse", nextResponse);
+        // console.log("setCookieHeaders", setCookieHeader);
+
+        return nextResponse;
     } catch (error: any) {
         console.error("Signin error:", error);
         return NextResponse.json(

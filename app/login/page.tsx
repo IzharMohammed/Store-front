@@ -52,6 +52,7 @@ async function signin(formData: FormData) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(formData),
   });
   console.log("response", response);
