@@ -23,7 +23,7 @@ const buildHeaders = (req: NextRequest) => {
     const userIdHeader = req.headers.get('x-user-id');
 
     if (userIdHeader) headers['x-user-id'] = userIdHeader;
-    
+
     return headers;
 };
 
@@ -39,11 +39,7 @@ export async function GET(req: NextRequest) {
     try {
         const response = await fetch(`${BACKEND_URL}/v1/cart`, {
             method: 'GET',
-            headers: {
-                'x-api-key': API_KEY,
-                'Content-Type': 'application/json',
-                'Cookie': req.headers.get('cookie') || '',
-            },
+            headers: buildHeaders(req),
         });
 
         const data = await response.json();

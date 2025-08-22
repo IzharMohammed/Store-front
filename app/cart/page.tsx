@@ -91,12 +91,22 @@ export default function CartPage() {
   } = useQuery({
     queryKey: ["cart"],
     queryFn: async (): Promise<CartResponse> => {
+      const userData = JSON.parse(localStorage.getItem("user_data")!);
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        credentials: "include",
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
       const response = await fetch("/api/v1/cart", {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       });
 
       if (!response.ok) {
@@ -184,6 +194,8 @@ export default function CartPage() {
   }
 
   const cartItems = cartData?.data || [];
+  console.log("cartItems", cartItems);
+
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
