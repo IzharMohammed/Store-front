@@ -56,7 +56,33 @@ export function HotProducts() {
     isError,
   } = useQuery({
     queryKey: ["products"],
-    queryFn: fetchProducts,
+    queryFn: async () => {
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/products`,
+        {
+          method: "GET",
+          headers,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart items");
+      }
+
+      return response.json();
+    },
   });
 
   const products = response?.data || [];

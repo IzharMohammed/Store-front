@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface AddToCartButtonProps {
   productId: string;
@@ -63,7 +64,7 @@ export default function AddToCartButton({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
-      alert(`${productName} added to cart successfully!`);
+      toast(`${productName} added to cart successfully!`);
     },
     onError: (error: any) => {
       console.error("Add to cart failed:", error);
