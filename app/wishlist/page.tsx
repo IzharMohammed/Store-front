@@ -510,13 +510,13 @@ export default function WishlistPage() {
   // Empty state
   if (!wishlistItems.length) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center bg-white rounded-2xl p-12 shadow-sm border border-gray-200"
+            className="text-center  rounded-2xl p-12 shadow-sm border"
           >
             <motion.div
               animate={{
@@ -528,21 +528,21 @@ export default function WishlistPage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="w-24 h-24 mx-auto mb-8 bg-purple-100 rounded-full flex items-center justify-center"
+              className="w-24 h-24 mx-auto mb-8  rounded-full flex items-center justify-center"
             >
               <Heart className="w-12 h-12 text-purple-600" />
             </motion.div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold  mb-4">
               Your wishlist is empty
             </h2>
-            <p className="text-gray-600 mb-8 text-lg leading-relaxed max-w-md mx-auto">
+            <p className=" mb-8 text-lg leading-relaxed max-w-md mx-auto">
               Save items you love to your wishlist. Review them anytime and
               easily move them to your cart.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
+                className="bg-purple-600 hover:bg-purple-700  px-8 py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
                 asChild
               >
                 <Link href="/products">
@@ -577,9 +577,9 @@ export default function WishlistPage() {
                 <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                   <Heart className="w-5 h-5 text-purple-600" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">Wishlist</h1>
+                <h1 className="text-3xl font-bold ">Wishlist</h1>
               </div>
-              <p className="text-gray-600">
+              <p className="">
                 {wishlistData?.count || 0} items in your wishlist
               </p>
             </motion.div>
@@ -613,11 +613,11 @@ export default function WishlistPage() {
             >
               <div className="flex items-center gap-2 mb-6">
                 <Heart className="w-5 h-5 text-purple-600" />
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold ">
                   You might also like
                 </h2>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className=" text-sm">
                 Based on items in your wishlist
               </p>
             </motion.div>
