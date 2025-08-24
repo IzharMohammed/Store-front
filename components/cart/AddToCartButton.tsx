@@ -33,11 +33,11 @@ export default function AddToCartButton({
       quantity: number;
     }): Promise<AddToCartResponse> => {
       const token = localStorage.getItem("auth_token");
-      const userData = JSON.parse(localStorage.getItem("user_data")!);
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
       const headers: HeadersInit = {
         "Content-Type": "application/json",
-        credentials: "include",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
       };
 
       // Add custom headers if user is authenticated
@@ -45,12 +45,14 @@ export default function AddToCartButton({
         headers["x-user-id"] = userData.id;
       }
 
-      const response = await fetch("/api/v1/cart", {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify({ productId, quantity }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/cart`,
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ productId, quantity }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
