@@ -19,15 +19,15 @@ class SessionManager {
    * Initialize session management
    * This should be called when your app starts
    */
-  init(): void {
-    // Check if we're in browser environment
-    if (typeof window === 'undefined') return;
+  // init(): void {
+  //   // Check if we're in browser environment
+  //   if (typeof window === 'undefined') return;
 
-    // If no auth token exists, generate anonymous session ID
-    if (!this.getAuthToken()) {
-      this.ensureAnonymousSession();
-    }
-  }
+  //   // If no auth token exists, generate anonymous session ID
+  //   if (!this.getAuthToken()) {
+  //     this.ensureAnonymousSession();
+  //   }
+  // }
 
   /**
    * Check if user is authenticated (has Better Auth token)
@@ -85,14 +85,14 @@ class SessionManager {
   /**
    * Ensure anonymous session exists
    */
-  private ensureAnonymousSession(): void {
-    if (typeof window === 'undefined') return;
+  // private ensureAnonymousSession(): void {
+  //   if (typeof window === 'undefined') return;
 
-    if (!this.getAnonymousSessionId()) {
-      const sessionId = this.generateUUID();
-      localStorage.setItem(this.ANONYMOUS_SESSION_KEY, sessionId);
-    }
-  }
+  //   if (!this.getAnonymousSessionId()) {
+  //     const sessionId = this.generateUUID();
+  //     localStorage.setItem(this.ANONYMOUS_SESSION_KEY, sessionId);
+  //   }
+  // }
 
   /**
    * Clear anonymous session
@@ -125,7 +125,7 @@ class SessionManager {
     localStorage.removeItem(this.USER_DATA_KEY);
 
     // Regenerate anonymous session
-    this.ensureAnonymousSession();
+    // this.ensureAnonymousSession();
   }
 
   /**
