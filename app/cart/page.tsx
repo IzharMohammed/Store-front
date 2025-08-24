@@ -152,7 +152,7 @@ export default function CartPage() {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       toast("Item removed from cart...!!!");
     },

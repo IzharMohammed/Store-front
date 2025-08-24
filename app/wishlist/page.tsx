@@ -24,6 +24,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiResponse, WishlistItem, WishlistResponse } from "@/types";
+import { toast } from "sonner";
 
 // Type-safe schemas
 const createWishlistSchema = z.object({
@@ -413,12 +414,11 @@ export default function WishlistPage() {
   // Remove from wishlist mutation
   const removeFromWishlistMutation = useMutation({
     mutationFn: async (itemId: string): Promise<RemoveFromWishlistResponse> => {
-      const userData = localStorage.getItem("user_data")
-        ? JSON.parse(localStorage.getItem("user_data")!)
-        : null;
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
       const headers: HeadersInit = {
         "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
       };
 
       // Add custom headers if user is authenticated
@@ -426,11 +426,13 @@ export default function WishlistPage() {
         headers["x-user-id"] = userData.id;
       }
 
-      const response = await fetch(`/api/v1/wishlist/${itemId}`, {
-        method: "DELETE",
-        headers,
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/wishlist/${itemId}`,
+        {
+          method: "DELETE",
+          headers,
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -439,11 +441,13 @@ export default function WishlistPage() {
 
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      toast("Item removed from wishlist...!!!");
     },
     onError: (error: any) => {
       console.error("Remove from wishlist failed:", error);
+      toast("Failed to remove item from wishlist");
     },
   });
 
