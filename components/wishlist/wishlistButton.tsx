@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ApiResponse, WishlistResponse } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner"
 
 interface WishlistButtonProps {
   productId: string;
@@ -110,7 +111,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      alert("wishlist added to cart successfully!");
+      toast("wishlist added to cart successfully!");
 
       // Trigger callback if provided
       if (onWishlistChange) {
@@ -136,12 +137,12 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
     }: {
       itemId: string;
     }): Promise<RemoveFromWishlistResponse> => {
-      const userData = localStorage.getItem("user_data")
-        ? JSON.parse(localStorage.getItem("user_data")!)
-        : null;
+      const userData = JSON.parse(localStorage.getItem("user_data")!);
+      console.log("userData", userData);
 
       const headers: HeadersInit = {
         "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
       };
 
       // Add custom headers if user is authenticated
@@ -149,11 +150,14 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
         headers["x-user-id"] = userData.id;
       }
 
-      const response = await fetch(`/api/v1/wishlist/${itemId}`, {
-        method: "DELETE",
-        headers,
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/wishlist/${itemId}`,
+        {
+          method: "DELETE",
+          headers,
+          body: JSON.stringify({ productId }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -164,7 +168,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-
+      toast("Item removed from wishlist")
       // Trigger callback if provided
       if (onWishlistChange) {
         onWishlistChange();
