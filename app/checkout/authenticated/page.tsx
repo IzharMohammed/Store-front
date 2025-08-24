@@ -114,7 +114,6 @@ export default function AuthenticatedCheckout() {
         {
           method: "POST",
           headers,
-          credentials: "include",
           body: JSON.stringify(orderData),
         }
       );
