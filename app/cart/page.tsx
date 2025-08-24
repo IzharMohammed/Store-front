@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface CartItem {
   id: string;
@@ -91,11 +92,11 @@ export default function CartPage() {
   } = useQuery({
     queryKey: ["cart"],
     queryFn: async (): Promise<CartResponse> => {
-      const userData = JSON.parse(localStorage.getItem("user_data")!);
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
       const headers: HeadersInit = {
         "Content-Type": "application/json",
-        credentials: "include",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
       };
 
       // Add custom headers if user is authenticated
@@ -103,11 +104,13 @@ export default function CartPage() {
         headers["x-user-id"] = userData.id;
       }
 
-      const response = await fetch("/api/v1/cart", {
-        method: "GET",
-        credentials: "include",
-        headers,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/cart`,
+        {
+          method: "GET",
+          headers,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch cart items");
@@ -120,14 +123,27 @@ export default function CartPage() {
   // Remove from cart mutation
   const removeFromCartMutation = useMutation({
     mutationFn: async (cartId: string): Promise<RemoveFromCartResponse> => {
-      const response = await fetch("/api/v1/cart", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ cartId }),
-      });
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/cart`,
+        {
+          method: "DELETE",
+          headers,
+          body: JSON.stringify({ cartId }),
+        }
+      );
+      console.log("response", response);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -138,9 +154,11 @@ export default function CartPage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast("Item removed from cart...!!!");
     },
     onError: (error: any) => {
       console.error("Remove from cart failed:", error);
+      toast("Failed to remove item from cart...!!!");
     },
   });
 
