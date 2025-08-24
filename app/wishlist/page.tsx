@@ -128,12 +128,12 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       layout
       className="group"
     >
-      <Card className="overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 bg-white">
+      <Card className="overflow-hidden border  hover:shadow-lg transition-all duration-300">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Product Image */}
             <div className="relative">
-              <div className="w-full sm:w-24 h-48 sm:h-24 relative bg-gray-50 rounded-lg overflow-hidden">
+              <div className="w-full sm:w-24 h-48 sm:h-24 relative  rounded-lg overflow-hidden">
                 <Image
                   src={item.product.image || "/placeholder.jpg"}
                   alt={item.product.name}
@@ -158,11 +158,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <div className="flex-1 space-y-3">
               <div>
                 <Link href={`/products/${item.product.id}`}>
-                  <h3 className="font-semibold text-gray-900 hover:text-purple-600 transition-colors duration-200 line-clamp-2">
+                  <h3 className="font-semibold  hover:text-purple-600 transition-colors duration-200 line-clamp-2">
                     {item.product.name}
                   </h3>
                 </Link>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                <p className="text-sm  mt-1 line-clamp-2">
                   {item.product.description}
                 </p>
               </div>
@@ -170,7 +170,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               <div className="flex items-center gap-2">
                 <Badge
                   variant="secondary"
-                  className="text-xs bg-gray-100 text-gray-700"
+                  className="text-xs  "
                 >
                   {item.product.category}
                 </Badge>
@@ -186,18 +186,18 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
               {/* Quantity Controls */}
               <div className="flex items-center gap-4">
-                <div className="flex items-center border border-gray-200 rounded-lg">
+                <div className="flex items-center border  rounded-lg">
                   <motion.button
                     whileHover={{ backgroundColor: "#f3f4f6" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
-                    className="p-2 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2  transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
                   </motion.button>
-                  <span className="px-4 py-2 font-medium text-gray-900 min-w-[3rem] text-center">
+                  <span className="px-4 py-2 font-medium  min-w-[3rem] text-center">
                     {quantity}
                   </span>
                   <motion.button
@@ -205,7 +205,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= (item.product.stock || 999)}
-                    className="p-2 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2  transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -238,7 +238,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 <Button
                   onClick={() => onAddToCart(item.product)}
                   disabled={item.product.stock === 0}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="w-full bg-purple-600 hover:bg-purple-700  border-0 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   {item.product.stock === 0 ? "Out of Stock" : "Add to Cart"}
@@ -265,17 +265,17 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
       animate="visible"
       className="sticky top-8"
     >
-      <Card className="bg-white border border-gray-200 shadow-sm">
+      <Card className=" shadow-sm">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-6">
             <Shield className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold ">
               Wishlist Summary
             </h2>
           </div>
 
           <div className="space-y-4 mb-6">
-            <div className="flex justify-between text-gray-600">
+            <div className="flex justify-between ">
               <span>Subtotal ({itemCount} items)</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
@@ -288,7 +288,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
               <span>Free</span>
             </div>
             <hr className="border-gray-200" />
-            <div className="flex justify-between text-lg font-bold text-gray-900">
+            <div className="flex justify-between text-lg font-bold">
               <span>Total</span>
               <span className="text-purple-600">${total.toFixed(2)}</span>
             </div>
@@ -560,7 +560,7 @@ export default function WishlistPage() {
 
   // Main render
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
