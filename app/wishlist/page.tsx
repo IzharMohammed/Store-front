@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +21,7 @@ import {
   Zap,
   Award,
 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiResponse, WishlistItem, WishlistResponse } from "@/types";
 
@@ -49,7 +49,12 @@ interface OrderSummaryProps {
   itemCount: number;
 }
 
-// Smooth animation variants
+interface RemoveFromWishlistResponse {
+  success: boolean;
+  message: string;
+}
+
+// Animation variants
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -146,7 +151,6 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-
               {/* Remove button */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -323,7 +327,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </motion.div>
-
             <Button
               variant="outline"
               className="w-full border-gray-200 hover:bg-gray-50 transition-colors duration-200"
@@ -370,20 +373,37 @@ export default function WishlistPage() {
   const isHeaderInView = useInView(headerRef, { once: true });
 
   // Fetch wishlist query
-  const { data: wishlistData, isLoading: wishlistLoading } = useQuery({
+  const {
+    data: wishlistData,
+    isLoading: wishlistLoading,
+    error: wishlistError,
+  } = useQuery({
     queryKey: ["wishlist"],
     queryFn: async (): Promise<WishlistResponse> => {
-      const response = await fetch("/api/v1/wishlist", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const userData = JSON.parse(localStorage.getItem("user_data")!);
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_BACKEND_API_KEY!,
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/wishlist`,
+        {
+          method: "GET",
+          headers,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch wishlist");
       }
+
       return response.json();
     },
   });
@@ -392,12 +412,23 @@ export default function WishlistPage() {
 
   // Remove from wishlist mutation
   const removeFromWishlistMutation = useMutation({
-    mutationFn: async (itemId: string): Promise<ApiResponse> => {
+    mutationFn: async (itemId: string): Promise<RemoveFromWishlistResponse> => {
+      const userData = localStorage.getItem("user_data")
+        ? JSON.parse(localStorage.getItem("user_data")!)
+        : null;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      // Add custom headers if user is authenticated
+      if (userData) {
+        headers["x-user-id"] = userData.id;
+      }
+
       const response = await fetch(`/api/v1/wishlist/${itemId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
       });
 
@@ -405,12 +436,13 @@ export default function WishlistPage() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to remove from wishlist");
       }
+
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error("Remove from wishlist failed:", error);
     },
   });
@@ -424,6 +456,7 @@ export default function WishlistPage() {
     console.log(`Added ${product.name} to cart!`);
   };
 
+  // Loading state
   if (wishlistLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -455,6 +488,33 @@ export default function WishlistPage() {
     );
   }
 
+  // Error state
+  if (wishlistError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <div className="text-center bg-white rounded-2xl p-12 shadow-sm border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Failed to load wishlist
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {wishlistError.message || "Something went wrong"}
+            </p>
+            <Button
+              onClick={() =>
+                queryClient.invalidateQueries({ queryKey: ["wishlist"] })
+              }
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
   if (!wishlistItems.length) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -479,16 +539,13 @@ export default function WishlistPage() {
             >
               <Heart className="w-12 h-12 text-purple-600" />
             </motion.div>
-
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Your wishlist is empty
             </h2>
-
             <p className="text-gray-600 mb-8 text-lg leading-relaxed max-w-md mx-auto">
               Save items you love to your wishlist. Review them anytime and
               easily move them to your cart.
             </p>
-
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
@@ -508,6 +565,7 @@ export default function WishlistPage() {
     );
   }
 
+  // Main render
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
