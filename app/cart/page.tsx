@@ -23,6 +23,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { CartResponse, RemoveFromCartResponse } from "@/types/cart";
+import { useRouter } from "next/navigation";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -58,6 +59,11 @@ const itemVariants: Variants = {
 
 export default function CartPage() {
   const queryClient = useQueryClient();
+
+  const router = useRouter();
+  const authenticatedUser = JSON.parse(
+    localStorage.getItem("user_data") || "{}"
+  );
 
   // Fetch cart items
   const {
@@ -516,6 +522,11 @@ export default function CartPage() {
                   <Button
                     size="lg"
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 shadow-lg group"
+                    onClick={() => {
+                      authenticatedUser && authenticatedUser.id
+                        ? router.push("/checkout/authenticated")
+                        : router.push("checkout/guest");
+                    }}
                   >
                     <CreditCard className="w-5 h-5 mr-2" />
                     Proceed to Checkout
