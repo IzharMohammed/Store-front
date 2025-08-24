@@ -127,6 +127,17 @@ export function Navbar() {
               </Button>
             </Link>
 
+            <Link href="/orders">
+              <Button variant="ghost" size="icon" className="relative">
+                <Package className="w-5 h-5" />
+                {/* {wishlistItems.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                    {wishlistItems.length}
+                  </Badge>
+                )} */}
+              </Button>
+            </Link>
+
             {/* Authentication Section */}
             {isLoading ? (
               <div className="animate-pulse bg-muted rounded-full w-8 h-8"></div>
