@@ -20,7 +20,6 @@ import {
   Package,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCartStore } from "@/stores/cart-store";
 // import { useWishlistStore } from "@/stores/wishlist-store";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -37,7 +36,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
-  const { getTotalItems } = useCartStore();
+  // const { getTotalItems } = useCartStore();
   // const { items: wishlistItems } = useWishlistStore();
   const { isAuthenticated, user, isLoading, logout } = useAuth();
 
@@ -109,11 +108,11 @@ export function Navbar() {
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="w-5 h-5" />
-                {getTotalItems() > 0 && (
+                {/* {getTotalItems() > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
                     {getTotalItems()}
                   </Badge>
-                )}
+                )} */}
               </Button>
             </Link>
 
@@ -230,7 +229,7 @@ export function Navbar() {
               <Link href="/cart" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  Cart ({getTotalItems()})
+                  {/* Cart ({getTotalItems()}) */}
                 </Button>
               </Link>
 
