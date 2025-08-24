@@ -1,4 +1,6 @@
 "use client";
+import { CreateOrderResponse, ShippingAddress } from "@/types/auth-order";
+import { CartResponse } from "@/types/cart";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence, Variant, Variants } from "framer-motion";
 import { useState } from "react";
@@ -38,45 +40,6 @@ const successVariants: Variants = {
     },
   },
 };
-
-interface CartItem {
-  id: string;
-  productId: string;
-  quantity: number;
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    image?: string;
-  };
-}
-
-interface CartResponse {
-  success: boolean;
-  data: CartItem[];
-  count: number;
-  message: string;
-}
-
-interface ShippingAddress {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-interface CreateOrderResponse {
-  success: boolean;
-  data?: {
-    orderId: string;
-    orderNumber: string;
-    total: number;
-    status: string;
-  };
-  message: string;
-  error?: string;
-}
 
 export default function AuthenticatedCheckout() {
   const queryClient = useQueryClient();
