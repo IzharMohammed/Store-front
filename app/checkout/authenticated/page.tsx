@@ -76,7 +76,6 @@ export default function AuthenticatedCheckout() {
         {
           method: "GET",
           headers,
-          credentials: "include",
         }
       );
 
