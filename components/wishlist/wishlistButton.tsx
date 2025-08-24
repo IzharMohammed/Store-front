@@ -54,7 +54,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/wishlist`,
         {
-          method: "POST",
+          method: "GET",
           headers,
         }
       );
