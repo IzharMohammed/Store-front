@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { ProductGrid } from "@/components/product-grid";
-import { ProductFilters } from "@/components/product-filters";
-import { useProductStore } from "@/stores/product-store";
+// import { ProductFilters } from "@/components/product-filters";
+// import { useProductStore } from "@/stores/product-store";
 
 export default function ProductsPage() {
-  const { products, filteredProducts, setFilters, filters } = useProductStore();
+  // const { products, filteredProducts, setFilters, filters } = useProductStore();
   const [showFilters, setShowFilters] = useState(false);
 
   return (
@@ -15,7 +15,7 @@ export default function ProductsPage() {
         <div
           className={`lg:w-1/4 ${showFilters ? "block" : "hidden lg:block"}`}
         >
-          <ProductFilters />
+          {/* <ProductFilters /> */}
         </div>
         <div className="lg:w-3/4">
           <div className="flex justify-between items-center mb-6">
@@ -27,7 +27,7 @@ export default function ProductsPage() {
               Filters
             </button>
           </div>
-          <ProductGrid products={filteredProducts} />
+          {/* <ProductGrid products={filteredProducts} /> */}
         </div>
       </div>
     </div>
