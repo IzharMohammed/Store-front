@@ -46,7 +46,7 @@ const productVariants: Variants = {
   },
 };
 
-export function HotProducts() {
+export function Products() {
   const [activeTab, setActiveTab] = useState("featured");
 
   const {

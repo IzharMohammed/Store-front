@@ -23,8 +23,14 @@ import {
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { ApiResponse, WishlistItem, WishlistResponse } from "@/types";
 import { toast } from "sonner";
+import {
+  OrderSummaryProps,
+  RemoveFromWishlistResponse,
+  WishlistCardProps,
+  WishlistItem,
+  WishlistResponse,
+} from "@/types/wishlist";
 
 // Type-safe schemas
 const createWishlistSchema = z.object({
@@ -37,23 +43,6 @@ const removeWishlistSchema = z.object({
 
 type CreateWishlistData = z.infer<typeof createWishlistSchema>;
 type RemoveWishlistData = z.infer<typeof removeWishlistSchema>;
-
-interface WishlistCardProps {
-  item: WishlistItem;
-  onRemove: (id: string) => void;
-  onAddToCart: (product: WishlistItem["product"]) => void;
-  isRemoving: boolean;
-}
-
-interface OrderSummaryProps {
-  items: WishlistItem[];
-  itemCount: number;
-}
-
-interface RemoveFromWishlistResponse {
-  success: boolean;
-  message: string;
-}
 
 // Animation variants
 const containerVariants: Variants = {

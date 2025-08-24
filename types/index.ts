@@ -67,30 +67,6 @@ export interface ProductFilters {
   search: string
 }
 
-export interface WishlistItem {
-  id: string;
-  productId: string;
-  customerId?: string;
-  sessionId?: string;
-  createdAt: string;
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    image?: string;
-    description?: string;
-    category: string;
-    stock: number;
-  };
-}
-
-export interface WishlistResponse {
-  success: boolean;
-  data: WishlistItem[];
-  count: number;
-  message: string;
-}
-
 export interface ProductResponse {
   success: boolean;
   data: Product[];

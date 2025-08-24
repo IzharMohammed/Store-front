@@ -4,9 +4,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ApiResponse, WishlistResponse } from "@/types";
+import { WishlistResponse } from "@/types/wishlist";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 interface WishlistButtonProps {
   productId: string;
@@ -168,7 +168,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-      toast("Item removed from wishlist")
+      toast("Item removed from wishlist");
       // Trigger callback if provided
       if (onWishlistChange) {
         onWishlistChange();

@@ -1,5 +1,5 @@
 import { HeroBanner } from "@/components/hero-banner";
-import { HotProducts } from "@/components/hot-products";
+import { Products } from "@/components/products";
 import { Categories } from "@/components/categories";
 import { FeaturedProducts } from "@/components/featured-products";
 
@@ -9,10 +9,9 @@ export default function HomePage() {
       <HeroBanner />
       <div className="container mx-auto px-4">
         <Categories />
-        <HotProducts />
+        <Products />
         {/* <FeaturedProducts /> */}
       </div>
     </div>
   );
 }
-

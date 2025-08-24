@@ -22,32 +22,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-
-interface CartItem {
-  id: string;
-  productId: string;
-  quantity: number;
-  addedAt: string;
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    image?: string;
-  };
-}
-
-interface CartResponse {
-  success: boolean;
-  data: CartItem[];
-  count: number;
-  message: string;
-}
-
-interface RemoveFromCartResponse {
-  success: boolean;
-  message: string;
-}
+import { CartResponse, RemoveFromCartResponse } from "@/types/cart";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
