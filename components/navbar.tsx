@@ -189,7 +189,7 @@ export function Navbar() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href="/login">
+                <Link href="/signin">
                   <Button variant="ghost">Sign In</Button>
                 </Link>
                 <Link href="/signup">
@@ -302,7 +302,7 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/signin" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
                       Sign In
                     </Button>

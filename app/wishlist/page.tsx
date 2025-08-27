@@ -168,10 +168,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  className="text-xs  "
-                >
+                <Badge variant="secondary" className="text-xs  ">
                   {item.product.category}
                 </Badge>
                 {item.product.stock <= 5 && item.product.stock > 0 && (
@@ -269,9 +266,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-6">
             <Shield className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-semibold ">
-              Wishlist Summary
-            </h2>
+            <h2 className="text-lg font-semibold ">Wishlist Summary</h2>
           </div>
 
           <div className="space-y-4 mb-6">
@@ -532,9 +527,7 @@ export default function WishlistPage() {
             >
               <Heart className="w-12 h-12 text-purple-600" />
             </motion.div>
-            <h2 className="text-3xl font-bold  mb-4">
-              Your wishlist is empty
-            </h2>
+            <h2 className="text-3xl font-bold  mb-4">Your wishlist is empty</h2>
             <p className=" mb-8 text-lg leading-relaxed max-w-md mx-auto">
               Save items you love to your wishlist. Review them anytime and
               easily move them to your cart.
@@ -613,13 +606,9 @@ export default function WishlistPage() {
             >
               <div className="flex items-center gap-2 mb-6">
                 <Heart className="w-5 h-5 text-purple-600" />
-                <h2 className="text-xl font-semibold ">
-                  You might also like
-                </h2>
+                <h2 className="text-xl font-semibold ">You might also like</h2>
               </div>
-              <p className=" text-sm">
-                Based on items in your wishlist
-              </p>
+              <p className=" text-sm">Based on items in your wishlist</p>
             </motion.div>
           </div>
 

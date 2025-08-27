@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { sessionManager } from "@/lib/session-manager";
+import { sessionManager } from "@/utils/session-manager";
 import {
   User,
   Mail,
@@ -29,7 +29,7 @@ import {
   Sparkles,
   LogIn,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format";
 
 interface FormData {
   email: string;
@@ -47,6 +47,7 @@ interface LoginResponse {
 }
 
 async function signin(formData: FormData) {
+  
   const response = await fetch("/api/signin", {
     method: "POST",
     headers: {

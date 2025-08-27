@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { sessionManager } from '@/lib/session-manager';
+import { sessionManager } from '@/utils/session-manager';
 
 interface AuthUser {
     id: string;

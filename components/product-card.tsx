@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,43 +7,33 @@ import { Star, Zap } from "lucide-react";
 import type { Product } from "@/types/index";
 import { WishlistButton } from "./wishlist/wishlistButton";
 import AddToCartButton from "./cart/AddToCartButton";
-import { motion } from "framer-motion";
+import { getWishlistItems } from "@/actions/wishlist";
 
 interface ProductCardProps {
   product: Product;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export async function ProductCard({ product }: ProductCardProps) {
+  const wishlistData = await getWishlistItems();
+
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="group"
-    >
+    <div className="group">
       <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
         {/* Product Image Container */}
         <div className="relative overflow-hidden">
           <Link href={`/product/${product.id}`}>
             <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
+              <div>
                 <Image
                   src={product.image || "/placeholder.svg?height=300&width=300"}
                   alt={product.name}
                   fill
                   className="object-cover"
                 />
-              </motion.div>
+              </div>
 
               {/* Overlay gradient */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             </div>
           </Link>
 
@@ -63,27 +51,24 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Wishlist Button */}
           <div className="absolute top-3 right-3">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <div>
               <WishlistButton
+                wishlistData
                 productId={product.id}
                 variant="ghost"
                 size="sm"
                 className="bg-white/90 hover:bg-white text-black border-0 shadow-lg backdrop-blur-sm"
               />
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* Product Info */}
         <CardContent className="p-4 space-y-3">
           <Link href={`/product/${product.id}`}>
-            <motion.h3
-              whileHover={{ x: 2 }}
-              transition={{ duration: 0.2 }}
-              className="font-semibold text-base leading-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 transition-all duration-300 line-clamp-2"
-            >
+            <h3 className="font-semibold text-base leading-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 transition-all duration-300 line-clamp-2">
               {product.name}
-            </motion.h3>
+            </h3>
           </Link>
 
           <div className="flex items-center justify-between">
@@ -95,13 +80,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center gap-1">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    whileHover={{ scale: 1.2, rotate: 180 }}
-                    transition={{ duration: 0.2, delay: i * 0.05 }}
-                  >
+                  <div key={i}>
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  </motion.div>
+                  </div>
                 ))}
               </div>
               <span className="text-xs text-muted-foreground ml-1">(4.5)</span>
@@ -110,14 +91,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Price */}
           <div className="flex items-center justify-between">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div>
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 ${product.price}
               </span>
-            </motion.div>
+            </div>
 
             {product.stock > 0 && product.stock <= 10 && (
               <Badge
@@ -142,20 +120,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardFooter>
 
         {/* Hover effect overlay */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          initial={false}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {/* Animated border */}
-        <motion.div
-          className="absolute inset-0 rounded-lg pointer-events-none"
-          whileHover={{
-            boxShadow: "0 0 30px rgba(147, 51, 234, 0.3)",
-          }}
-          transition={{ duration: 0.3 }}
-        />
+        <div className="absolute inset-0 rounded-lg pointer-events-none" />
       </Card>
-    </motion.div>
+    </div>
   );
 }
