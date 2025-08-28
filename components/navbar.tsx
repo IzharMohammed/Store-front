@@ -2,7 +2,7 @@ import type React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Package, Badge } from "lucide-react";
-import { cookieManager } from "@/utils/authTools"; // Update with correct path
+import { cookieManager } from "@/utils/authTools";
 import {
   MobileMenu,
   SearchForm,
@@ -11,14 +11,14 @@ import {
 } from "./nav-client";
 import { getCartItems } from "@/actions/cart";
 import { getWishlistItems } from "@/actions/wishlist";
+import { getOrders } from "@/actions/order";
 
 export async function Navbar() {
-  // Get user data server-side
   const user = await cookieManager.getAuthUser();
   const isAuthenticated = await cookieManager.isAuthenticated();
   const cartItems = await getCartItems();
   const wli = await getWishlistItems();
-  console.log("count", cartItems.count);
+  const orders = await getOrders();
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,23 +37,39 @@ export async function Navbar() {
             {/* Theme Toggle - Client Component */}
             <ThemeToggle />
 
+            {/* Cart Icon with Count */}
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="w-5 h-5" />
-                {cartItems.count > 0 && cartItems.count}
+                {cartItems.count > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-medium rounded-full h-4 w-4 flex items-center justify-center">
+                    {cartItems.count > 99 ? "99+" : cartItems.count}
+                  </span>
+                )}
               </Button>
             </Link>
 
+            {/* Wishlist Icon with Count */}
             <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="relative">
                 <Heart className="w-5 h-5" />
-                {wli.count > 0 && wli.count}
+                {wli.count > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-medium rounded-full h-4 w-4 flex items-center justify-center">
+                    {wli.count > 99 ? "99+" : wli.count}
+                  </span>
+                )}
               </Button>
             </Link>
 
+            {/* Orders Icon with Count */}
             <Link href="/orders">
               <Button variant="ghost" size="icon" className="relative">
                 <Package className="w-5 h-5" />
+                {orders.count > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-medium rounded-full h-4 w-4 flex items-center justify-center">
+                    {orders.count > 99 ? "99+" : orders.count}
+                  </span>
+                )}
               </Button>
             </Link>
 
