@@ -14,14 +14,14 @@ interface ProductCardProps {
 }
 
 export async function ProductCard({ product }: ProductCardProps) {
-  // const wishlistData = await getWishlistItems();
+  const wishlistData = await getWishlistItems();
 
   return (
     <div className="group">
       <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
         {/* Product Image Container */}
         <div className="relative overflow-hidden">
-          <Link href={`/product/${product.id}`}>
+          <Link href={`/products/${product.id}`}>
             <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-muted/20 to-muted/40">
               <div>
                 <Image
@@ -53,7 +53,7 @@ export async function ProductCard({ product }: ProductCardProps) {
           <div className="absolute top-3 right-3">
             <div>
               <WishlistButton
-                wishlistData
+                wishlistData={wishlistData}
                 productId={product.id}
                 variant="ghost"
                 size="sm"

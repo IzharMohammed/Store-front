@@ -1,55 +1,191 @@
-"use client";
-
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Heart, ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react";
 import AddToCartButton from "./cart/AddToCartButton";
+import { WishlistButton } from "./wishlist/wishlistButton";
 
-export function ProductDetails({ product }: { product: any }) {
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  stock: number;
+  status: string;
+  createdAt: string;
+  storeId: string;
+}
+
+interface ProductDetailsProps {
+  product: Product;
+}
+
+export function ProductDetails({ product }: ProductDetailsProps) {
+  const formattedPrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(product.price);
+
+  const isInStock = product.stock > 0;
+  const isLowStock = product.stock > 0 && product.stock <= 10;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-      {/* Image - Left side */}
-      <div className="relative w-full h-96">
-        <Image
-          src={product?.image || "/placeholder.svg?height=300&width=300"}
-          alt={product?.name || "Product image"}
-          fill
-          className="object-cover rounded-lg"
-        />
-      </div>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb */}
+        <nav className="flex mb-8 text-sm">
+          <a href="/" className="text-muted-foreground hover:text-foreground">
+            Home
+          </a>
+          <span className="mx-2 text-muted-foreground">/</span>
+          <a
+            href="/products"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Products
+          </a>
+          <span className="mx-2 text-muted-foreground">/</span>
+          <span className="text-foreground">{product.category}</span>
+        </nav>
 
-      {/* Details - Right side */}
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">{product?.name}</h1>
-        <p className="text-gray-600">{product?.description}</p>
-        <p className="text-lg font-semibold text-purple-600">
-          ${product?.price}
-        </p>
-
-        {/* Rating */}
-        <div className="flex items-center gap-1">
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-            ))}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
+          {/* Product Image */}
+          <div className="flex flex-col-reverse">
+            <div className="aspect-w-1 aspect-h-1 w-full">
+              <div className="relative h-96 w-full overflow-hidden rounded-lg border">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="h-full w-full object-cover object-center"
+                  priority
+                />
+                {!isInStock && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <Badge variant="destructive" className="text-lg px-4 py-2">
+                      Out of Stock
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground ml-1">(4.5)</span>
-        </div>
 
-        {/* Add to Cart Button */}
-        <AddToCartButton
-          productId={product.id}
-          productName={product.name}
-          className="w-full group relative overflow-hidden bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black dark:from-slate-200 dark:to-white dark:hover:from-white dark:hover:to-slate-100 dark:text-black border-0 shadow-lg transition-all duration-300"
-        />
+          {/* Product Info */}
+          <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
+            <div className="flex items-center justify-between">
+              <Badge variant="secondary" className="mb-4">
+                {product.category}
+              </Badge>
+            </div>
 
-        {/* Extra Details */}
-        <div className="space-y-2">
-          {[...Array(10)].map((_, i) => (
-            <p key={i} className="text-gray-500">
-              Extra product details line {i + 1}...
-            </p>
-          ))}
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              {product.name}
+            </h1>
+
+            <div className="mt-3">
+              <p className="text-3xl font-bold">{formattedPrice}</p>
+            </div>
+
+            {/* Stock Status */}
+            <div className="mt-4">
+              {isInStock ? (
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
+                    <div className="h-2 w-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-sm text-green-600 font-medium">
+                      In Stock
+                    </span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    ({product.stock} available)
+                  </span>
+                  {isLowStock && (
+                    <Badge
+                      variant="outline"
+                      className="text-orange-600 border-orange-300"
+                    >
+                      Low Stock
+                    </Badge>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <div className="h-2 w-2 bg-red-500 rounded-full mr-2"></div>
+                  <span className="text-sm text-red-600 font-medium">
+                    Out of Stock
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <h3 className="sr-only">Description</h3>
+              <div className="text-base text-muted-foreground">
+                <p>{product.description}</p>
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
+            {/* Actions */}
+            <div className="mt-8 flex flex-col space-y-4">
+              <div className="flex space-x-4">
+                {/* <Button size="lg" className="flex-1" disabled={!isInStock}>
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  Add to Cart
+                </Button> */}
+                <AddToCartButton productId={product.id} />
+                {/* <Button size="lg" variant="outline" className="px-8"> */}
+                {/* <WishlistButton productId={product.id} /> */}
+                {/* </Button> */}
+              </div>
+
+              {!isInStock && (
+                <Button variant="outline" size="lg" className="w-full">
+                  Notify When Available
+                </Button>
+              )}
+            </div>
+
+            {/* Product Details */}
+            <div className="mt-8 border-t pt-8">
+              <h3 className="text-lg font-medium mb-4">Product Details</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Product ID:</span>
+                  <span className="font-mono">{product.id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Category:</span>
+                  <span>{product.category}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Status:</span>
+                  <Badge
+                    variant={
+                      product.status === "ACTIVE" ? "default" : "secondary"
+                    }
+                  >
+                    {product.status}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Added:</span>
+                  <span>
+                    {new Date(product.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -64,11 +64,8 @@ export async function getProductDetails(productId: string) {
             headers["x-user-id"] = userData.id;
         }
 
-        console.log("  BACKENDURL = ", process.env.BACKEND_URL);
-
-        console.log("Fetching from backend:", `${BACKEND_URL}/v1/products/${productId}`);
         const response = await fetch(
-            `${BACKEND_URL}/v1/product/${productId}`,
+            `${BACKEND_URL}/v1/products/${productId}`,
             {
                 method: "GET",
                 headers,
