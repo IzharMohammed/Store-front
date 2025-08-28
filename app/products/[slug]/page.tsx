@@ -2,9 +2,9 @@ import { ProductDetails } from "@/components/product-details";
 import { getProductDetails } from "@/actions/products";
 
 export default async function ProductDetailsPage({
-  params,
+  params
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
