@@ -1,3 +1,5 @@
+import { ShippingAddress } from "./auth-order"
+
 export interface Product {
   id: string
   name: string
@@ -44,8 +46,9 @@ export interface Order {
   customerEmail?: string
   customerName?: string
   customerPhone?: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
+  shippingAddress:ShippingAddress
   customerId: string
   storeId: string
   items: OrderItem[]

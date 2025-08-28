@@ -31,7 +31,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
 
   return (
     <div className="sticky top-8">
-      <Card className="shadow-sm border-0 bg-gradient-to-br from-background to-muted/30 backdrop-blur-sm shadow-xl">
+      <Card className="border-0 bg-gradient-to-br from-background to-muted/30 backdrop-blur-sm shadow-xl">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-6">
             <Shield className="w-5 h-5 text-purple-600" />
