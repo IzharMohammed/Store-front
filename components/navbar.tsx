@@ -1,15 +1,24 @@
 import type React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Package } from "lucide-react";
+import { ShoppingCart, Heart, Package, Badge } from "lucide-react";
 import { cookieManager } from "@/utils/authTools"; // Update with correct path
-import { MobileMenu, SearchForm, ThemeToggle, UserDropdown } from "./nav-client";
-
+import {
+  MobileMenu,
+  SearchForm,
+  ThemeToggle,
+  UserDropdown,
+} from "./nav-client";
+import { getCartItems } from "@/actions/cart";
+import { getWishlistItems } from "@/actions/wishlist";
 
 export async function Navbar() {
   // Get user data server-side
   const user = await cookieManager.getAuthUser();
   const isAuthenticated = await cookieManager.isAuthenticated();
+  const cartItems = await getCartItems();
+  const wli = await getWishlistItems();
+  console.log("count", cartItems.count);
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,22 +40,14 @@ export async function Navbar() {
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="w-5 h-5" />
-                {/* {getTotalItems() > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                    {getTotalItems()}
-                  </Badge>
-                )} */}
+                {cartItems.count > 0 && cartItems.count}
               </Button>
             </Link>
 
             <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="relative">
                 <Heart className="w-5 h-5" />
-                {/* {wishlistItems.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                    {wishlistItems.length}
-                  </Badge>
-                )} */}
+                {wli.count > 0 && wli.count}
               </Button>
             </Link>
 
@@ -72,10 +73,7 @@ export async function Navbar() {
           </div>
 
           {/* Mobile Menu - Client Component (includes button and menu) */}
-          <MobileMenu
-            user={user}
-            isAuthenticated={isAuthenticated}
-          />
+          <MobileMenu user={user} isAuthenticated={isAuthenticated} />
         </div>
       </div>
     </nav>
