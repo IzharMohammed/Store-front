@@ -31,6 +31,7 @@ import {
   WishlistItem,
   WishlistResponse,
 } from "@/types/wishlist";
+import EmptyWishlist from "@/components/wishlist/empty-wishlist";
 
 // Type-safe schemas
 const createWishlistSchema = z.object({
@@ -327,29 +328,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
 };
 
 // Loading skeleton
-const WishlistSkeleton: React.FC = () => (
-  <div className="space-y-4">
-    {Array.from({ length: 3 }).map((_, index) => (
-      <Card key={index} className="border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex gap-6 animate-pulse">
-            <div className="w-24 h-24 bg-gray-200 rounded-lg" />
-            <div className="flex-1 space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
-              <div className="h-3 bg-gray-200 rounded w-1/2" />
-              <div className="h-8 bg-gray-200 rounded w-32" />
-            </div>
-            <div className="text-right space-y-2">
-              <div className="h-6 bg-gray-200 rounded w-16" />
-              <div className="h-10 bg-gray-200 rounded w-24" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-);
-
 // Main component
 export default function WishlistPage() {
   const router = useRouter();
@@ -444,111 +422,9 @@ export default function WishlistPage() {
     console.log(`Added ${product.name} to cart!`);
   };
 
-  // Loading state
-  if (wishlistLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <div className="mb-6">
-                <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
-                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
-              </div>
-              <WishlistSkeleton />
-            </div>
-            <div className="lg:col-span-1">
-              <Card className="border border-gray-200">
-                <CardContent className="p-6 animate-pulse">
-                  <div className="h-6 bg-gray-200 rounded w-32 mb-4" />
-                  <div className="space-y-3 mb-6">
-                    <div className="h-4 bg-gray-200 rounded" />
-                    <div className="h-4 bg-gray-200 rounded" />
-                    <div className="h-4 bg-gray-200 rounded" />
-                  </div>
-                  <div className="h-12 bg-gray-200 rounded" />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (wishlistError) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <div className="text-center bg-white rounded-2xl p-12 shadow-sm border border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Failed to load wishlist
-            </h2>
-            <p className="text-gray-600 mb-6">
-              {wishlistError.message || "Something went wrong"}
-            </p>
-            <Button
-              onClick={() =>
-                queryClient.invalidateQueries({ queryKey: ["wishlist"] })
-              }
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              Try Again
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Empty state
   if (!wishlistItems.length) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center  rounded-2xl p-12 shadow-sm border"
-          >
-            <motion.div
-              animate={{
-                y: [0, -10, 0],
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="w-24 h-24 mx-auto mb-8  rounded-full flex items-center justify-center"
-            >
-              <Heart className="w-12 h-12 text-purple-600" />
-            </motion.div>
-            <h2 className="text-3xl font-bold  mb-4">Your wishlist is empty</h2>
-            <p className=" mb-8 text-lg leading-relaxed max-w-md mx-auto">
-              Save items you love to your wishlist. Review them anytime and
-              easily move them to your cart.
-            </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="lg"
-                className="bg-purple-600 hover:bg-purple-700  px-8 py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
-                asChild
-              >
-                <Link href="/products">
-                  <ShoppingBag className="w-5 h-5 mr-2" />
-                  Start Shopping
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </div>
-    );
+    return <EmptyWishlist />;
   }
 
   // Main render

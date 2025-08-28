@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -27,7 +27,7 @@ export default function Error({
           className="text-center"
         >
           <div className="text-red-500 text-lg mb-4">
-            Error loading cart: {(error as Error).message}
+            Error loading wishlist: {(error as Error).message}
           </div>
           <Button variant="outline" asChild>
             <Link href="/products">
