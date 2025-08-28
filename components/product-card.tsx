@@ -14,7 +14,7 @@ interface ProductCardProps {
 }
 
 export async function ProductCard({ product }: ProductCardProps) {
-  const wishlistData = await getWishlistItems();
+  // const wishlistData = await getWishlistItems();
 
   return (
     <div className="group">

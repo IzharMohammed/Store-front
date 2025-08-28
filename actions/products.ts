@@ -8,6 +8,8 @@ const BACKEND_URL = process.env.BACKEND_URL || "";
 export async function getProducts() {
     try {
         const userData = await cookieManager.getAuthUser();
+        console.log("userData", userData);
+
         const headers: HeadersInit = {
             "Content-Type": "application/json",
             "x-api-key": API_KEY,
@@ -15,8 +17,11 @@ export async function getProducts() {
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
+            console.log("Setting x-customer-id to:", userData.id);
         }
+        console.log("Final headers being sent:", headers);
+        console.log("Request URL:", `${BACKEND_URL}/v1/products`);
 
         const response = await fetch(
             `${BACKEND_URL}/v1/products`,
@@ -29,6 +34,9 @@ export async function getProducts() {
                 }
             }
         );
+
+        console.log("Response status:", response.status);
+        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
             throw new Error("Failed to fetch cart items");

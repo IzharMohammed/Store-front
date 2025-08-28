@@ -14,6 +14,7 @@ export async function getCartItems(): Promise<CartResponse> {
 
     try {
         const userData = await cookieManager.getAuthUser();
+        console.log("userData", userData);
 
         const headers: HeadersInit = {
             "Content-Type": "application/json",
@@ -22,7 +23,7 @@ export async function getCartItems(): Promise<CartResponse> {
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
@@ -88,7 +89,7 @@ export async function addToCart(
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
@@ -130,7 +131,7 @@ export async function removeFromCart(cartId: string): Promise<void> {
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
@@ -165,7 +166,7 @@ export async function updateCartQuantity(cartId: string, quantity: number): Prom
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(

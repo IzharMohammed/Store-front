@@ -26,7 +26,7 @@ export async function getWishlistItems(): Promise<WishlistResponse> {
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
@@ -85,7 +85,7 @@ export async function addToWishlist(productId: string): Promise<AddToWishlistRes
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
@@ -160,7 +160,7 @@ export async function removeFromWishlist(itemId: string): Promise<RemoveFromWish
 
         // Add custom headers if user is authenticated
         if (userData) {
-            headers["x-user-id"] = userData.id;
+            headers["x-customer-id"] = userData.id;
         }
 
         const response = await fetch(
