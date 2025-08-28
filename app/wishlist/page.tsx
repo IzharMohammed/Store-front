@@ -17,6 +17,7 @@ import { WishlistItem } from "@/types/wishlist";
 import EmptyWishlist from "@/components/wishlist/empty-wishlist";
 import { getWishlistItems } from "@/actions/wishlist";
 import { WishlistItemActions } from "@/components/wishlist/wishlist-item-actions";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 
 // Order Summary Component
 interface OrderSummaryProps {
@@ -74,17 +75,17 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, itemCount }) => {
           </div>
 
           <div className="space-y-3">
-            <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200 border-0">
+            {/* <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200 border-0">
               <ShoppingCart className="w-5 h-5 mr-2" />
               Add All to Cart
               <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            </Button> */}
             <Button
               variant="outline"
               className="w-full border-gray-200 hover:bg-gray-50 transition-colors duration-200"
               asChild
             >
-              <Link href="/products">Continue Shopping</Link>
+              <Link href="/">Continue Shopping</Link>
             </Button>
           </div>
         </CardContent>
@@ -161,13 +162,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({ item }) => {
               </div>
             </div>
 
-            <Button
-              disabled={item.product.stock === 0}
-              className="w-full bg-purple-600 hover:bg-purple-700 border-0 shadow-sm hover:shadow-md transition-all duration-200"
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              {item.product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-            </Button>
+            {/* <Button disabled={item.product.stock === 0}> */}
+            {/* <ShoppingCart className="w-4 h-4 mr-2" /> */}
+            {item.product.stock === 0 ? (
+              "Out of Stock"
+            ) : (
+              <AddToCartButton productId={item.productId} />
+            )}
+            {/* </Button> */}
           </div>
         </div>
       </CardContent>
