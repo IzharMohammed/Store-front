@@ -14,7 +14,6 @@ export async function getCartItems(): Promise<CartResponse> {
 
     try {
         const userData = await cookieManager.getAuthUser();
-        console.log("userData", userData);
 
         const headers: HeadersInit = {
             "Content-Type": "application/json",
@@ -80,7 +79,6 @@ export async function addToCart(
 
     try {
         const userData = await cookieManager.getAuthUser();
-        console.log("userData", userData);
 
         const headers: HeadersInit = {
             "Content-Type": "application/json",

@@ -81,7 +81,6 @@ export async function signin(
             body: JSON.stringify({ email, password }),
         });
 
-        console.log("response", response);
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
@@ -92,7 +91,6 @@ export async function signin(
         }
 
         const data: SigninResponse = await response.json();
-        console.log("data", data);
 
         // Set authentication cookies
         await cookieManager.setAuthenticatedUser(data);

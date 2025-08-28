@@ -8,7 +8,6 @@ const BACKEND_URL = process.env.BACKEND_URL || "";
 export async function getProducts() {
     try {
         const userData = await cookieManager.getAuthUser();
-        console.log("userData", userData);
 
         const headers: HeadersInit = {
             "Content-Type": "application/json",
@@ -18,10 +17,7 @@ export async function getProducts() {
         // Add custom headers if user is authenticated
         if (userData) {
             headers["x-customer-id"] = userData.id;
-            console.log("Setting x-customer-id to:", userData.id);
         }
-        console.log("Final headers being sent:", headers);
-        console.log("Request URL:", `${BACKEND_URL}/v1/products`);
 
         const response = await fetch(
             `${BACKEND_URL}/v1/products`,
@@ -35,18 +31,18 @@ export async function getProducts() {
             }
         );
 
-        console.log("Response status:", response.status);
-        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
-            console.log("Failed to fetch cart items");
+            const errorData = await response.json().catch(() => ({}));
+            return {
+                success: false,
+                error: errorData.message || `Server error: ${response.status}. Please try again.`,
+            };
         }
 
         return response.json();
     } catch (error) {
-        console.log("Error fetching cart:", error);
-        throw error;
-
+        console.error("Error fetching cart:", error);
     }
 }
 
@@ -75,17 +71,19 @@ export async function getProductDetails(productId: string) {
                 }
             }
         );
-        console.log("product details RESPONSE DATA", response);
 
         if (!response.ok) {
-            console.log("Failed to fetch cart items");
+            const errorData = await response.json().catch(() => ({}));
+            return {
+                success: false,
+                error: errorData.message || `Server error: ${response.status}. Please try again.`,
+            };
         }
 
         return response.json();
     } catch (error) {
         console.log("Error fetching product  details:", error);
-        // throw error;
-
+        throw error;
     }
 
 }

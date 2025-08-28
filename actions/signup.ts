@@ -80,8 +80,6 @@ export async function signup(
             body: JSON.stringify({ email, name, password }),
         });
 
-        console.log("response", response);
-
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             return {

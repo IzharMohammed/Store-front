@@ -101,7 +101,6 @@ export function CheckoutForm({ cartItems }: CheckoutFormProps) {
         items,
         total,
       };
-      console.log("orderData", orderData);
 
       const result = await createOrder(orderData);
 

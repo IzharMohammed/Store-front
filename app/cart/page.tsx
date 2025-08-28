@@ -20,7 +20,6 @@ import { CartItemActions } from "@/components/cart/cart-item-actions";
 export default async function CartPage() {
   const cartData = await getCartItems();
   const cartItems = cartData?.data || [];
-  console.log("cartItems", cartItems);
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
