@@ -1,7 +1,5 @@
 "use server";
 
-"use server"
-
 import { WishlistResponse } from "@/types/wishlist";
 import { cookieManager } from "@/utils/authTools";
 import { revalidateTag } from "next/cache";
