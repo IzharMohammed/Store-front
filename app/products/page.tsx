@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ProductGrid } from "@/components/product-grid";
+import { ProductGrid } from "@/components/product/product-grid";
 // import { ProductFilters } from "@/components/product-filters";
 // import { useProductStore } from "@/stores/product-store";
 

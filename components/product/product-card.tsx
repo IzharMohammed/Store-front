@@ -5,8 +5,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Zap } from "lucide-react";
 import type { Product } from "@/types/index";
-import { WishlistButton } from "./wishlist/wishlistButton";
-import AddToCartButton from "./cart/AddToCartButton";
+import { WishlistButton } from "../wishlist/wishlistButton";
+import AddToCartButton from "../cart/AddToCartButton";
 import { getWishlistItems } from "@/actions/wishlist";
 
 interface ProductCardProps {

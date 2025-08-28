@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/product-card";
+import { ProductCard } from "@/components/product/product-card";
 // import { useProductStore } from "@/stores/product-store";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export function FeaturedProducts() {
           Discover our handpicked selection of amazing products
         </p>
       </div>
-{/* 
+      {/* 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {featuredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />

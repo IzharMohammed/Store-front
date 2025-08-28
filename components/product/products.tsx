@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ProductCard } from "@/components/product-card";
+import { ProductCard } from "@/components/product/product-card";
 import { Product, ProductResponse } from "@/types/index";
 import { Flame, TrendingUp, Sparkles, Tag } from "lucide-react";
 import { getProducts } from "@/actions/products";
@@ -34,13 +34,13 @@ export async function Products() {
 
         {/* Products Grid */}
         {/* <AnimatePresence mode="wait"> */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product: Product, index: number) => (
-              <div id={product.id}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product: Product, index: number) => (
+            <div id={product.id}>
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
         {/* </AnimatePresence> */}
 
         {/* Show More Button */}

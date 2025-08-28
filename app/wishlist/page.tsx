@@ -33,18 +33,6 @@ import {
 } from "@/types/wishlist";
 import EmptyWishlist from "@/components/wishlist/empty-wishlist";
 
-// Type-safe schemas
-const createWishlistSchema = z.object({
-  productId: z.string().min(1, "Product ID is required"),
-});
-
-const removeWishlistSchema = z.object({
-  id: z.string().min(1, "Wishlist item ID is required"),
-});
-
-type CreateWishlistData = z.infer<typeof createWishlistSchema>;
-type RemoveWishlistData = z.infer<typeof removeWishlistSchema>;
-
 // Animation variants
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
