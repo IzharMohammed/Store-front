@@ -65,7 +65,7 @@ export async function ProductCard({ product }: ProductCardProps) {
 
         {/* Product Info */}
         <CardContent className="p-4 space-y-3">
-          <Link href={`/product/${product.id}`}>
+          <Link href={`/products/${product.id}`}>
             <h3 className="font-semibold text-base leading-tight hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 transition-all duration-300 line-clamp-2">
               {product.name}
             </h3>

@@ -87,3 +87,58 @@ export async function getProductDetails(productId: string) {
     }
 
 }
+
+export async function getPaginatedProducts(page: number, limit: number, category?:string) {
+
+    try {
+
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+            "x-api-key": API_KEY,
+        };
+
+
+        const response = await fetch(
+            `${BACKEND_URL}/v1/products?page=${page}&limit=${limit}?category=${category}`,
+            {
+                method: "GET",
+                headers,
+                cache: 'no-store',
+                next: {
+                    tags: ["products"]
+                }
+            }
+        );
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            return {
+                success: false,
+                items: [],
+                totalPages: 1,
+                error: errorData.message || `Server error: ${response.status}. Please try again.`,
+            };
+        }
+
+        const data = await response.json();
+        const totalPages = Math.ceil(data.totalProducts / limit);
+
+
+        return {
+            success: true,
+            items: data.items,
+            totalProducts: data.totalProducts,
+            error: undefined,
+        };
+
+
+    } catch (error: any) {
+        console.error("Error fetching products:", error);
+        return {
+            success: false,
+            items: [],
+            totalPages: 1,
+            error: error.message || "Unknown error occurred",
+        };
+    }
+
+}

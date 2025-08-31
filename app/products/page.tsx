@@ -1,35 +1,59 @@
-"use client";
 
-import { useState } from "react";
-import { ProductGrid } from "@/components/product/product-grid";
-// import { ProductFilters } from "@/components/product-filters";
-// import { useProductStore } from "@/stores/product-store";
+import { getProducts } from "@/actions/products";
+import ProductError from "./error";
+import { CategoryFilter } from "@/components/CategoryFilter";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ProductCard } from "@/components/product/product-card";
+// import { Product } from "@/types/index";
 
-export default function ProductsPage() {
-  // const { products, filteredProducts, setFilters, filters } = useProductStore();
-  const [showFilters, setShowFilters] = useState(false);
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams?: { category?: string };
+}) {
+  const response = await getProducts();
+  const products = response?.data || [];
+  console.log(products[0]);
+
+  const selectedCategory =  searchParams?.category;
+
+  const filteredProducts = selectedCategory ? products.filter((p:any) => p.category?.toLowerCase() === selectedCategory.toLowerCase()) : products;
+
+  console.log(filteredProducts[0]);
+
+  if (!response?.success) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <ProductError error={new Error(response?.error || "Failed")} reset={() => { }} />
+      </div>
+    );
+  }
+
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div
-          className={`lg:w-1/4 ${showFilters ? "block" : "hidden lg:block"}`}
-        >
-          {/* <ProductFilters /> */}
-        </div>
-        <div className="lg:w-3/4">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">All Products</h1>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden bg-primary text-primary-foreground px-4 py-2 rounded-md"
-            >
-              Filters
-            </button>
-          </div>
-          {/* <ProductGrid products={filteredProducts} /> */}
-        </div>
+    <div className="container mx-auto px-20 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">All Products</h1>
+        <CategoryFilter />
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <div key={product.id}>
+              <ProductCard product={product} />
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-10 text-gray-500">
+            No products found..
+            <Link href="/">
+              <Button className="mt-4">Go back</Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div >
   );
 }

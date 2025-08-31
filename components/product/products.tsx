@@ -3,6 +3,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Product, ProductResponse } from "@/types/index";
 import { Flame, TrendingUp, Sparkles, Tag } from "lucide-react";
 import { getProducts } from "@/actions/products";
+import Link from "next/link";
 
 export async function Products() {
   const response = await getProducts();
@@ -45,16 +46,18 @@ export async function Products() {
 
         {/* Show More Button */}
         <div className="text-center mt-12">
-          <Button
-            size="lg"
-            variant="outline"
-            className="group border-2 hover:bg-muted/50 transition-all duration-300 px-8"
-          >
-            <span className="mr-2">View All Products</span>
-            <div>
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </Button>
+          <Link href="/products">
+            <Button
+              size="lg"
+              variant="outline"
+              className="group border-2 hover:bg-muted/50 transition-all duration-300 px-8"
+              >
+              <span className="mr-2">View All Products</span>
+              <div>
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

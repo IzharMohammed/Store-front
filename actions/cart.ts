@@ -38,7 +38,8 @@ export async function getCartItems(): Promise<CartResponse> {
         );
 
         if (!response.ok) {
-            throw new Error("Failed to fetch cart items");
+            const errorText = await response.text();
+            console.log(`Error ${response.status}: ${errorText}`);
         }
 
         return response.json();
