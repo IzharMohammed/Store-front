@@ -46,7 +46,7 @@ export async function Products() {
 
         {/* Show More Button */}
         <div className="text-center mt-12">
-          <Link href="/products?page=1&limit=16">
+          <Link href="/products">
             <Button
               size="lg"
               variant="outline"

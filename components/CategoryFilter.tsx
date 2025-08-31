@@ -11,8 +11,14 @@ export function CategoryFilter() {
 
   const handleCategorySelect = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("category", category); 
-    router.push(`/products?${params.toString()}`);
+
+    if(category === "all"){
+      params.delete("category");
+    }else{
+      params.set("category", category);
+    }
+
+    router.replace(`/products?${params.toString()}`);
   };
 
 
@@ -22,6 +28,7 @@ export function CategoryFilter() {
         <Button>Filter</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => handleCategorySelect("all")}>All</DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleCategorySelect("Electronics")}>Electronics</DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleCategorySelect("Clothing")}>Clothing</DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleCategorySelect("Home and garden")}>Home and garden</DropdownMenuItem>
