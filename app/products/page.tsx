@@ -5,22 +5,13 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
-// import { Product } from "@/types/index";
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams?: { category?: string };
-}) {
+
+
+export default async function ProductsPage({ searchParams, }: { searchParams?: { category?: string } }) 
+{
   const response = await getProducts();
   const products = response?.data || [];
-  console.log(products[0]);
-
-  const selectedCategory =  searchParams?.category;
-
-  const filteredProducts = selectedCategory ? products.filter((p:any) => p.category?.toLowerCase() === selectedCategory.toLowerCase()) : products;
-
-  console.log(filteredProducts[0]);
 
   if (!response?.success) {
     return (
@@ -29,6 +20,16 @@ export default async function ProductsPage({
       </div>
     );
   }
+
+  console.log(products[0]);
+
+  const selectedCategory =  searchParams?.category;
+  console.log(selectedCategory);
+
+  const filteredProducts = selectedCategory ? products.filter((p:any) => p.category === selectedCategory) : products;
+
+  console.log(filteredProducts[0]);
+
 
 
   return (
@@ -41,7 +42,7 @@ export default async function ProductsPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <div key={product.id}>
+            <div key={product.id.toString()}>
               <ProductCard product={product} />
             </div>
           ))
