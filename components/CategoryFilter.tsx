@@ -13,12 +13,12 @@ export function CategoryFilter() {
     const params = new URLSearchParams(searchParams.toString());
 
     if(category === "all"){
-      params.delete("category");
+      router.push("/products");
     }else{
       params.set("category", category);
     }
+    router.push(`/products?${params.toString()}`);
 
-    router.replace(`/products?${params.toString()}`);
   };
 
 
