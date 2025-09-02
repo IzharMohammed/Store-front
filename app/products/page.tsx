@@ -8,7 +8,7 @@ import { ProductCard } from "@/components/product/product-card";
 
 
 
-export default async function ProductsPage({ searchParams, }: { searchParams?: { category?: string } }) 
+export default async function ProductsPage({ searchParams, }: { searchParams?: Promise<{ category?: string }>; }) 
 {
   const response = await getProducts();
   const products = response?.data || [];
@@ -23,7 +23,8 @@ export default async function ProductsPage({ searchParams, }: { searchParams?: {
 
   console.log(products[0]);
 
-  const selectedCategory =  searchParams?.category;
+  const resolvedParams =  await searchParams;
+  const selectedCategory = resolvedParams?.category;
   console.log(selectedCategory);
 
   const filteredProducts = selectedCategory ? products.filter((p:any) => p.category === selectedCategory) : products;
