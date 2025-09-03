@@ -26,8 +26,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { logoutAction } from "@/actions/logout"; // You'll need to create this file
+import { PackageSearch } from 'lucide-react';
 
 interface AuthUser {
   id: string;
@@ -45,7 +47,7 @@ interface MobileMenuProps {
 }
 
 // Search Form Component
-export  function SearchForm() {
+export function SearchForm() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
@@ -60,7 +62,7 @@ export  function SearchForm() {
   return (
     <form
       onSubmit={handleSearch}
-      className="hidden md:flex flex-1 max-w-md mx-8"
+      className="flex flex-1 max-w-md mx-8"
     >
       <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -156,15 +158,6 @@ export function MobileMenu({ user, isAuthenticated }: MobileMenuProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(
-        searchQuery
-      )}`;
-      setIsMenuOpen(false);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -185,128 +178,126 @@ export function MobileMenu({ user, isAuthenticated }: MobileMenuProps) {
   };
 
   return (
+
     <>
-      {/* Mobile Menu Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      >
-        {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </Button>
+      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Menu className="w-6 h-6" />
+          </Button>
+        </SheetTrigger>
 
-      {/* Mobile Menu Dropdown */}
-      {isMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-background border-b shadow-lg md:hidden z-50">
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            <form onSubmit={handleSearch} className="w-full">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </form>
+        <SheetContent side="left" className="w72 md:hidden">
+          <SheetHeader>
+            <SheetTitle className="text-lg font-bold">
+              Menu
+            </SheetTitle>
+          </SheetHeader>
 
-            <div className="flex flex-col space-y-2">
-              <Link href="/products" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Products
-                </Button>
-              </Link>
+          {isMenuOpen && (
+            <div className="absolute top-16 left-0 right-0 bg-background md:hidden z-50">
+              <div className="container mx-auto px-4 py-4 space-y-4">
 
-              <Link href="/cart" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Cart
-                </Button>
-              </Link>
-
-              <Link href="/wishlist" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Wishlist
-                </Button>
-              </Link>
-
-              {/* Mobile Authentication Section */}
-              {isAuthenticated && user ? (
-                <>
-                  <div className="flex items-center space-x-2 px-3 py-2 bg-muted/50 rounded-md">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={`https://avatar.vercel.sh/${user.email}`}
-                        alt={user.name}
-                      />
-                      <AvatarFallback>
-                        {getUserInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{user.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <User className="w-4 h-4 mr-2" />
-                      Profile
-                    </Button>
-                  </Link>
-
-                  <Link href="/orders" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Package className="w-4 h-4 mr-2" />
-                      My Orders
-                    </Button>
-                  </Link>
-
+                <div className="flex flex-col space-y-2">
                   <Button
                     variant="ghost"
                     className="w-full justify-start"
-                    onClick={handleLogout}
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Log out
+                    {theme === "dark" ? (
+                      <Sun className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Moon className="w-4 h-4 mr-2" />
+                    )}
+                    {theme === "dark" ? "Light Mode" : "Dark Mode"}
                   </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/signin" onClick={() => setIsMenuOpen(false)}>
+
+                  <Link href="/products" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
-                      Sign In
+                      <PackageSearch className="w-4 h-4 mr-2"/>
+                      Products
                     </Button>
                   </Link>
-                  <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full justify-start">Sign Up</Button>
-                  </Link>
-                </>
-              )}
 
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4 mr-2" />
-                ) : (
-                  <Moon className="w-4 h-4 mr-2" />
-                )}
-                {theme === "dark" ? "Light Mode" : "Dark Mode"}
-              </Button>
+                  <Link href="/cart" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Cart
+                    </Button>
+                  </Link>
+
+                  <Link href="/wishlist" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Heart className="w-4 h-4 mr-2" />
+                      Wishlist
+                    </Button>
+                  </Link>
+
+                  {/* Mobile Authentication Section */}
+                  {isAuthenticated && user ? (
+                    <>
+                      <div className="flex items-center space-x-2 px-3 py-2 bg-muted/50 rounded-md">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={`https://avatar.vercel.sh/${user.email}`}
+                            alt={user.name}
+                          />
+                          <AvatarFallback>
+                            {getUserInitials(user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">{user.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {user.email}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <User className="w-4 h-4 mr-2" />
+                          Profile
+                        </Button>
+                      </Link>
+
+                      <Link href="/orders" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <Package className="w-4 h-4 mr-2" />
+                          My Orders
+                        </Button>
+                      </Link>
+
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Log out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/signin" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          Sign In
+                        </Button>
+                      </Link>
+                      <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                        <Button className="w-full justify-start">Sign Up</Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+
+        </SheetContent >
+      </Sheet >
     </>
+
+
   );
 }
