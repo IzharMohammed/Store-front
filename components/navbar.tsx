@@ -88,7 +88,12 @@ export async function Navbar() {
           </div>
 
           {/* Mobile Menu - Client Component (includes button and menu) */}
-          <MobileMenu user={user} isAuthenticated={isAuthenticated} />
+
+          <div className="md:hidden">
+            <MobileMenu user={user} isAuthenticated={isAuthenticated} />
+          </div>
+
+
         </div>
       </div>
     </nav>
